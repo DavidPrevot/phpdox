@@ -1,0 +1,5 @@
+# bootstrap/*	usr/share/php/TheSeer/phpDox/bootstrap
+dependencies	usr/share/php/TheSeer/phpDox
+phpdox		usr/bin
+src/*		usr/share/php/TheSeer/phpDox
+templates	usr/share/php/TheSeer/phpDox

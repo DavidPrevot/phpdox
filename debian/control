@@ -1,0 +1,32 @@
+Source: phpdox
+Section: php
+Priority: optional
+Maintainer: Debian PHP PEAR Maintainers <pkg-php-pear@lists.alioth.debian.org>
+Uploaders: David Prévot <taffit@debian.org>,
+           Prach Pongpanich <prachpub@gmail.com>
+Build-Depends: ant,
+               debhelper (>= 9),
+               help2man,
+               php-directory-scanner,
+               php-fdomdocument,
+               php-fxsl,
+               php-timer,
+               php-zeta-console-tools,
+               phpunit,
+               pkg-php-tools (>= 1.7~)
+Standards-Version: 3.9.5
+Homepage: http://phpdox.de/
+Vcs-Git: git://anonscm.debian.org/pkg-php/phpdox.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-php/phpdox.git
+XS-Testsuite: autopkgtest
+
+Package: phpdox
+Architecture: all
+Depends: ${misc:Depends}, ${phpcomposer:Debian-require}
+Recommends: php5-cli
+Suggests: ${phpcomposer:Debian-suggest}
+Replaces: ${phpcomposer:Debian-replace}
+Breaks: ${phpcomposer:Debian-conflict}, ${phpcomposer:Debian-replace}
+Provides: ${phpcomposer:Debian-provide}
+Description: documentation generation framework and tool
+ ${phpcomposer:description}

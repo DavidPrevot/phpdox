@@ -1,0 +1,5 @@
+phpdox (0.6.5-1) unstable; urgency=low
+
+  * Initial Release (Closes: #746419)
+
+ -- David Prévot <taffit@debian.org>  Thu, 01 May 2014 08:44:39 -0400

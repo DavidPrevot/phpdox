@@ -1,0 +1,7 @@
+theseer		fdomdocument		php-fdomdocument
+theseer		directoryscanner	php-directory-scanner
+theseer		fxsl			php-fxsl
+phpunit		php-timer		php-timer
+zetacomponents	base			php-zeta-base
+zetacomponents	console-tools		php-zeta-console-tools
+nikic		php-parser		php-parser

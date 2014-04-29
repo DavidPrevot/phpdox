@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+VERSION := $(shell head -1 debian/changelog | sed 's/.*(//;s/).*//')
+
+%:
+	dh $@ --with phpcomposer
+
+override_dh_auto_build:
+	cp -a phpdox.php phpdox
+	sed -i s/%development%/$(VERSION)/ phpdox
+
+override_dh_auto_test:
+	phpunit
+	dh_auto_test -O--buildsystem=phppear
+
+override_dh_installman:
+	mkdir debian/tmp
+	cd debian/phpdox/usr/share/php && \
+		help2man --no-info \
+		--name='phpDox command line interface' \
+		../../bin/phpdox \
+		> $(CURDIR)/debian/tmp/phpdox.1
+	dh_installman
