@@ -10,8 +10,11 @@ override_dh_auto_build:
 	sed -i s/%development%/$(VERSION)/ phpdox
 
 override_dh_auto_test:
+ifeq (,$(findstring nocheck, $(DEB_BUILD_OPTIONS)))
 	phpunit
-	dh_auto_test -O--buildsystem=phppear
+else
+	echo "** tests disabled"
+endif
 
 override_dh_installman:
 	mkdir debian/tmp
