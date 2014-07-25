@@ -33,55 +33,16 @@
  * @author     Arne Blankerts <arne@blankerts.de>
  * @copyright  Arne Blankerts <arne@blankerts.de>, All rights reserved.
  * @license    BSD License
- *
  */
 
-namespace TheSeer\phpDox {
+namespace TheSeer\phpDox\DocBlock {
 
-    use TheSeer\fDOM\fDOMElement;
+    class InheritdocAttribute extends GenericElement {
 
-    class ProjectConfig {
-
-        /**
-         * @var fDOMElement;
-         */
-        private $ctx;
-
-        /**
-         * Constructor for global config
-         *
-         * @param fDOMElement $ctx   Reference to <project> node
-         */
-        public function __construct(fDOMElement $ctx) {
-            $this->ctx = $ctx;
-        }
-
-        public function getWorkDirectory() {
-            return new FileInfo($this->ctx->getAttribute('workdir', 'xml'));
-        }
-
-        public function getSourceDirectory() {
-            return new FileInfo($this->ctx->getAttribute('source', 'src'));
-        }
-
-        public function isPublicOnlyMode() {
-            return $this->ctx->getAttribute('publiconly', 'false') === 'true';
-        }
-
-        public function getCollectorConfig() {
-            $colNode = $this->ctx->queryOne('cfg:collector');
-            if (!$colNode) {
-                throw new ConfigException("Project does not have a collector section", ConfigException::NoCollectorSection);
-            }
-            return new CollectorConfig($this, $colNode);
-        }
-
-        public function getGeneratorConfig() {
-            $genNode = $this->ctx->queryOne('cfg:generator');
-            if (!$genNode) {
-                throw new ConfigException("Project does not have a generator section", ConfigException::NoGeneratorSection);
-            }
-            return new GeneratorConfig($this, $genNode);
+        public function asDom(\TheSeer\fDOM\fDOMDocument $ctx) {
+            $node = $ctx->createAttribute('inherit');
+            $node->appendChild($ctx->createTextNode('true'));
+            return $node;
         }
 
     }

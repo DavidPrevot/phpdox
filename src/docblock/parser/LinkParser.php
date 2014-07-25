@@ -33,55 +33,20 @@
  * @author     Arne Blankerts <arne@blankerts.de>
  * @copyright  Arne Blankerts <arne@blankerts.de>, All rights reserved.
  * @license    BSD License
- *
  */
 
-namespace TheSeer\phpDox {
+namespace TheSeer\phpDox\DocBlock {
 
-    use TheSeer\fDOM\fDOMElement;
+    class LinkParser extends GenericParser {
 
-    class ProjectConfig {
+        public function getObject(array $buffer) {
+            $obj = $this->buildObject('link', $buffer);
+            $parts = preg_split("/[\s,]+/", $this->payload, 2, PREG_SPLIT_NO_EMPTY);
+            if (count($parts) == 1) {
 
-        /**
-         * @var fDOMElement;
-         */
-        private $ctx;
-
-        /**
-         * Constructor for global config
-         *
-         * @param fDOMElement $ctx   Reference to <project> node
-         */
-        public function __construct(fDOMElement $ctx) {
-            $this->ctx = $ctx;
-        }
-
-        public function getWorkDirectory() {
-            return new FileInfo($this->ctx->getAttribute('workdir', 'xml'));
-        }
-
-        public function getSourceDirectory() {
-            return new FileInfo($this->ctx->getAttribute('source', 'src'));
-        }
-
-        public function isPublicOnlyMode() {
-            return $this->ctx->getAttribute('publiconly', 'false') === 'true';
-        }
-
-        public function getCollectorConfig() {
-            $colNode = $this->ctx->queryOne('cfg:collector');
-            if (!$colNode) {
-                throw new ConfigException("Project does not have a collector section", ConfigException::NoCollectorSection);
             }
-            return new CollectorConfig($this, $colNode);
-        }
-
-        public function getGeneratorConfig() {
-            $genNode = $this->ctx->queryOne('cfg:generator');
-            if (!$genNode) {
-                throw new ConfigException("Project does not have a generator section", ConfigException::NoGeneratorSection);
-            }
-            return new GeneratorConfig($this, $genNode);
+            $obj->setValue($this->payload);
+            return $obj;
         }
 
     }

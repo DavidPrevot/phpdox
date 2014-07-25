@@ -4,12 +4,9 @@ namespace TheSeer\phpDox\Generator\Enricher {
     use TheSeer\fDOM\fDOMDocument;
     use TheSeer\fDOM\fDOMElement;
     use TheSeer\fDOM\fDOMException;
-    use TheSeer\fDOM\XPathQuery;
-    use TheSeer\phpDox\Collector\MemberObject;
+    use TheSeer\phpDox\FileInfo;
     use TheSeer\phpDox\Generator\ClassStartEvent;
-    use TheSeer\phpDox\Generator\InterfaceStartEvent;
     use TheSeer\phpDox\Generator\PHPDoxEndEvent;
-    use TheSeer\phpDox\Generator\PHPDoxStartEvent;
     use TheSeer\phpDox\Generator\TraitStartEvent;
 
     class PHPUnit extends AbstractEnricher implements EndEnricherInterface, ClassEnricherInterface, TraitEnricherInterface {
@@ -28,6 +25,7 @@ namespace TheSeer\phpDox\Generator\Enricher {
 
 
         private $results = array();
+        private $coverage = array();
 
         public function __construct(PHPUnitConfig $config) {
             $this->config = $config;
@@ -56,6 +54,9 @@ namespace TheSeer\phpDox\Generator\Enricher {
                     foreach($results as $key => $value) {
                         $resultNode->setAttribute(strtolower($key), $value);
                     }
+                    $container->appendChild(
+                        $container->ownerDocument->importNode($this->coverage[$namespace][$class])
+                    );
                 }
             }
         }
@@ -73,11 +74,14 @@ namespace TheSeer\phpDox\Generator\Enricher {
             if (!$fileNode) {
                 return;
             }
-            $paths = explode('/', $fileNode->getAttribute('path'));
-            $file = $fileNode->getAttribute('file');
 
+            $fileInfo = new FileInfo($fileNode->getAttribute('path'));
+            $srcDir = $this->config->getSourceDirectory();
+            $paths = explode('/', (string)$fileInfo->getRelative($srcDir));
+            $file = $fileNode->getAttribute('file');
             $paths = array_slice($paths, 1);
-            $query = '//pu:project/pu:directory';
+
+            $query = sprintf('//pu:project/pu:directory[@name = "%s"]', $srcDir->getRealPath());
             foreach($paths as $path) {
                 $query .= sprintf('/pu:directory[@name = "%s"]', $path);
             }
@@ -97,7 +101,7 @@ namespace TheSeer\phpDox\Generator\Enricher {
                 $fname = $this->config->getCoveragePath() . '/' . $fname;
                 if (!file_exists($fname)) {
                     throw new EnricherException(
-                        sprintf('PHPLoc xml file "%s" not found.', $fname),
+                        sprintf('PHPUnit xml file "%s" not found.', $fname),
                         EnricherException::LoadError
                     );
                 }
@@ -107,7 +111,7 @@ namespace TheSeer\phpDox\Generator\Enricher {
                 return $dom;
             } catch (fDOMException $e) {
                 throw new EnricherException(
-                    'Parsing PHPLoc xml file failed: ' . $e->getMessage(),
+                    'Parsing PHPUnit xml file failed: ' . $e->getMessage(),
                     EnricherException::LoadError
                 );
             }
@@ -194,8 +198,10 @@ namespace TheSeer\phpDox\Generator\Enricher {
 
             if (!isset($this->results[$classNamespace])) {
                 $this->results[$classNamespace] = array();
+                $this->coverage[$classNamespace] = array();
             }
             $this->results[$classNamespace][$className] = $result;
+            $this->coverage[$classNamespace][$className] = $coverageTarget->cloneNode(false);
         }
     }
 

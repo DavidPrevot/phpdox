@@ -192,6 +192,12 @@ namespace TheSeer\phpDox\Collector {
                     $unit = new ClassObject();
                     break;
                 }
+                default: {
+                    throw new ProjectException(
+                        sprintf('Unexpected type "%s"', $indexNode->localName),
+                        ProjectException::UnexpectedType
+                    );
+                }
             }
 
             $dom = new fDOMDocument();
@@ -218,7 +224,7 @@ namespace TheSeer\phpDox\Collector {
         }
 
         /**
-         * @return void
+         * @return array
          */
         public function save() {
             $map = array('class' => 'classes', 'trait' => 'traits', 'interface' => 'interfaces');
@@ -307,7 +313,7 @@ namespace TheSeer\phpDox\Collector {
                 $this->source->import($dom);
             }
 
-            $this->index = new IndexCollection();
+            $this->index = new IndexCollection($this->srcDir);
             $srcFile = $this->xmlDir . '/index.xml';
             if (file_exists($srcFile)) {
                 $dom = new fDOMDocument();
@@ -337,6 +343,7 @@ namespace TheSeer\phpDox\Collector {
     class ProjectException extends \Exception {
 
         const UnitNotFoundInIndex = 1;
+        const UnexpectedType = 2;
 
     }
 }
