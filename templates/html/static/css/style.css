@@ -273,6 +273,10 @@ table.styled td {
     font-size: 0.9em;
 }
 
+dl.styled {
+    font-size: 0.9em;
+}
+
 ul.history {
     list-style-type: none;
 }
@@ -366,6 +370,10 @@ footer span {
 /* enrichment */
 .testresult-PASSED {
     color:darkgreen;
+}
+
+.testresult-EMPTY {
+    color: rgba(0, 100, 0, 0.20);
 }
 
 .testresult-FAILED {
