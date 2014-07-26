@@ -1,3 +1,17 @@
+phpdox (0.6.6.1-1) experimental; urgency=medium
+
+  [ Arne Blankerts ]
+  * Remove PHPParser 0.9.4 since we have 1.0.0
+
+  [ David Prévot ]
+  * No tests if DEB_BUILD_OPTIONS contains nocheck
+  * Install embedded upstream changelog
+  * Update copyright
+  * Document minimum-stability for php-parser
+  * Upload to experimental since it relies on a beta version of php-parser
+
+ -- David Prévot <taffit@debian.org>  Fri, 25 Jul 2014 23:01:21 -0400
+
 phpdox (0.6.5-1) unstable; urgency=low
 
   * Initial Release (Closes: #746419)
