@@ -1,0 +1,21 @@
+From: =?utf-8?q?David_Pr=C3=A9vot?= <taffit@debian.org>
+Date: Fri, 12 Sep 2014 15:28:03 -0400
+Subject: Drop now useless requirement on ZetaComponents
+
+Forwarded: https://github.com/theseer/phpdox/pull/163
+---
+ phpdox.php | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/phpdox.php b/phpdox.php
+index 5507f44..f495af8 100755
+--- a/phpdox.php
++++ b/phpdox.php
+@@ -45,7 +45,6 @@ define('PHPDOX_VERSION', '%development%');
+ require 'TheSeer/DirectoryScanner/autoload.php';
+ require 'TheSeer/fDOMDocument/autoload.php';
+ require 'TheSeer/fXSL/autoload.php';
+-require 'ezc/Base/base.php';
+ require 'PHP/Timer.php';
+ 
+ if (strpos(PHPDOX_VERSION, '%devel')===0) {
