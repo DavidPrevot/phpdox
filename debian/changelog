@@ -1,3 +1,20 @@
+phpdox (0.7.0-1) unstable; urgency=medium
+
+  [ Arne Blankerts ]
+  * Replaced dependency to ZetaComponents' CLI Options parser by custom
+    implementation with explicit API
+  * Prepare Release 0.7.0
+  * Remove ZetaComponents
+
+  [ David Prévot ]
+  * Update copyright and build-dependencies
+  * Display upstream version instead of Debian one
+  * Add final period to long description
+  * Drop now useless patch, and upload to unstable
+  * Drop now useless requirement on ZetaComponents
+
+ -- David Prévot <taffit@debian.org>  Fri, 12 Sep 2014 15:30:14 -0400
+
 phpdox (0.6.6.1-1) experimental; urgency=medium
 
   [ Arne Blankerts ]
