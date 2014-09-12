@@ -1,9 +1,9 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:pdx="http://xml.phpdox.net/src#"
+                xmlns:pdx="http://xml.phpdox.net/src"
                 xmlns:pdxf="http://xml.phpdox.net/functions"
                 xmlns:pu="http://schema.phpunit.de/coverage/1.0"
-                exclude-result-prefixes="pdx">
+                exclude-result-prefixes="pdx pdxf pu">
 
     <xsl:import href="components.xsl" />
     <xsl:import href="functions.xsl" />
@@ -131,6 +131,9 @@
                 </xsl:if>
                 <xsl:if test="//pdx:enrichment[@type = 'git']">
                 <li><a href="#history">History</a></li>
+                </xsl:if>
+                <xsl:if test="$unit/@start"><!-- hack: test for start line == we know something about this class -->
+                <li><a href="{$base}source/{$unit/pdx:file/@relative}.xhtml#line{$unit/@start}">Source</a></li>
                 </xsl:if>
             </ul>
         </nav>

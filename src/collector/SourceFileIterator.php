@@ -3,23 +3,21 @@ namespace TheSeer\phpDox\Collector {
 
     use TheSeer\phpDox\FileInfo;
 
-    class PathConverterIterator implements \Iterator {
+    class SourceFileIterator implements \Iterator {
 
         private $iterator;
+        private $srcDir;
 
-        public function __construct(\Iterator $iterator) {
+        public function __construct(\Iterator $iterator, $srcDir) {
             $this->iterator = $iterator;
+            $this->srcDir = $srcDir;
         }
 
         /**
-         * (PHP 5 &gt;= 5.0.0)<br/>
-         * Return the current element
-         *
-         * @link http://php.net/manual/en/iterator.current.php
-         * @return mixed Can return any type.
+         * @return SourceFile
          */
         public function current() {
-            return new FileInfo($this->iterator->current()->getPathname());
+            return new SourceFile($this->iterator->current()->getPathname(), $this->srcDir);
         }
 
         /**

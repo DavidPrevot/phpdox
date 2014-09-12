@@ -48,7 +48,14 @@ namespace TheSeer\phpDox\Collector {
          */
         private $srcDir;
 
+        /**
+         * @var fDOMElement[]
+         */
         private $original = array();
+
+        /**
+         * @var fDOMElement[]
+         */
         private $collection = array();
 
         private $workDom;
@@ -56,12 +63,12 @@ namespace TheSeer\phpDox\Collector {
         public function __construct(FileInfo $srcDir) {
             $this->srcDir = $srcDir;
             $this->workDom = new fDOMDocument();
-            $this->workDom->registerNamespace('phpdox', 'http://xml.phpdox.net/src#');
-            $this->workDom->appendElementNS('http://xml.phpdox.net/src#', 'source');
+            $this->workDom->registerNamespace('phpdox', 'http://xml.phpdox.net/src');
+            $this->workDom->appendElementNS('http://xml.phpdox.net/src', 'source');
         }
 
         public function import(fDOMDocument $dom) {
-            $dom->registerNamespace('phpdox', 'http://xml.phpdox.net/src#');
+            $dom->registerNamespace('phpdox', 'http://xml.phpdox.net/src');
             $dir = $dom->queryOne('/phpdox:source/phpdox:dir');
             if (!$dir)  {
                 return;
@@ -69,31 +76,41 @@ namespace TheSeer\phpDox\Collector {
             $this->importDirNode($dir, '');
         }
 
-        public function addFile(FileInfo $file) {
-            $node = $this->workDom->createElementNS('http://xml.phpdox.net/src#', 'file');
+        public function addFile(SourceFile $file) {
+            $path = $file->getRealPath();
+            $node = $this->workDom->createElementNS('http://xml.phpdox.net/src', 'file');
             $node->setAttribute('name', basename($file->getBasename()));
             $node->setAttribute('size', $file->getSize());
             $node->setAttribute('time', date('c', $file->getMTime()));
             $node->setAttribute('unixtime', $file->getMTime());
             $node->setAttribute('sha1', sha1_file($file->getPathname()));
-
-            $path = $file->getRealPath();
             $this->collection[$path] = $node;
-            return $this->isChanged($path);
+            $changed = $this->isChanged($path);
+            if (!$changed) {
+                $node->setAttribute('xml', $this->original[$path]->getAttribute('xml'));
+            }
+            return $changed;
+        }
+
+        public function setTokenFileReference(SourceFile $file, $tokenPath) {
+            $path = $file->getRealPath();
+            if (!isset($this->collection[$path])) {
+                throw new SourceCollectionException(
+                    sprintf("File %s not found in collection", $path),
+                    SourceCollectionException::SourceNotFound
+                );
+            }
+            $this->collection[$path]->setAttribute('xml', $tokenPath);
         }
 
         public function removeFile(FileInfo $file) {
-            unset($this->collection[$file->getRealPath()]);
-        }
-
-        public function getChangedFiles() {
-            $list = array();
-            foreach(array_keys($this->collection) as $path) {
-                if ($this->isChanged($path)) {
-                    $list[] = $path;
-                }
+            if (!isset($this->collection[$file->getRealPath()])) {
+                throw new SourceCollectionException(
+                    sprintf("File %s not found in collection", $file->getRealPath()),
+                    SourceCollectionException::SourceNotFound
+                );
             }
-            return $list;
+            unset($this->collection[$file->getRealPath()]);
         }
 
         public function getVanishedFiles() {
@@ -124,7 +141,7 @@ namespace TheSeer\phpDox\Collector {
                 foreach ($dirs as $dir) {
                     $node = $ctx->queryOne('phpdox:dir[@name="' . $dir . '"]');
                     if (!$node) {
-                        $node = $ctx->appendElementNS('http://xml.phpdox.net/src#', 'dir');
+                        $node = $ctx->appendElementNS('http://xml.phpdox.net/src', 'dir');
                         $node->setAttribute('name', $dir);
                     }
                     $ctx = $node;
@@ -156,6 +173,11 @@ namespace TheSeer\phpDox\Collector {
             return $org->getAttribute('sha1') != $new->getAttribute('sha1');
         }
 
+    }
+
+
+    class SourceCollectionException extends \Exception {
+        const SourceNotFound = 1;
     }
 
 }
