@@ -22,7 +22,6 @@ XS-Testsuite: autopkgtest
 Package: phpdox
 Architecture: all
 Depends: ${misc:Depends}, ${phpcomposer:Debian-require}
-Recommends: php5-cli
 Suggests: ${phpcomposer:Debian-suggest}
 Replaces: ${phpcomposer:Debian-replace}
 Breaks: ${phpcomposer:Debian-conflict}, ${phpcomposer:Debian-replace}
