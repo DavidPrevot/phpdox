@@ -65,6 +65,10 @@ namespace TheSeer\phpDox\Collector {
          */
         private $index = NULL;
 
+        /**
+         * @var SourceFile[]
+         */
+        private $files  = array();
 
         private $saveUnits = array();
         private $loadedUnits = array();
@@ -97,10 +101,11 @@ namespace TheSeer\phpDox\Collector {
          * @param FileInfo $file
          * @return bool
          */
-        public function addFile(FileInfo $file) {
+        public function addFile(SourceFile $file) {
             $isNew = $this->source->addFile($file);
             if ($isNew) {
                 $this->removeFileReferences($file->getPathname());
+                $this->files[$file->getPathname()] = $file;
             }
             return $isNew;
         }
@@ -110,6 +115,7 @@ namespace TheSeer\phpDox\Collector {
          */
         public function removeFile(FileInfo $file) {
             $this->removeFileReferences($file->getPathname());
+            unset($this->files[$file->getPathname()]);
             $this->source->removeFile($file);
         }
 
@@ -227,13 +233,8 @@ namespace TheSeer\phpDox\Collector {
          * @return array
          */
         public function save() {
-            $map = array('class' => 'classes', 'trait' => 'traits', 'interface' => 'interfaces');
-            foreach ($map as $col) {
-                $path = $this->xmlDir . '/' . $col;
-                if (!file_exists($path)) {
-                    mkdir($path, 0755, TRUE);
-                }
-            }
+            $map = $this->initDirectories();
+
             $indexDom = $this->index->export();
             $reportUnits = $this->saveUnits;
             foreach($this->saveUnits as $unit) {
@@ -266,12 +267,10 @@ namespace TheSeer\phpDox\Collector {
             $indexDom->preserveWhiteSpace = FALSE;
             $indexDom->save($this->xmlDir . '/index.xml');
 
-            $sourceDom = $this->source->export();
-            $sourceDom->formatOutput = TRUE;
-            $sourceDom->preserveWhiteSpace = FALSE;
-            $sourceDom->save($this->xmlDir . '/source.xml');
+            $this->saveSources();
 
             $this->saveUnits = array();
+            $this->files = array();
 
             return $reportUnits;
         }
@@ -285,7 +284,7 @@ namespace TheSeer\phpDox\Collector {
             $affected = array();
             $dom = new fDOMDocument();
             $dom->load($this->xmlDir . '/' . $fname);
-            $dom->registerNamespace('phpdox', 'http://xml.phpdox.net/src#');
+            $dom->registerNamespace('phpdox', 'http://xml.phpdox.net/src');
             $extends = $dom->queryOne('//phpdox:extends');
             if ($extends instanceof fDOMElement) {
                 try {
@@ -301,6 +300,17 @@ namespace TheSeer\phpDox\Collector {
             return $affected;
         }
 
+
+        private function initDirectories() {
+            $map = array('class' => 'classes', 'trait' => 'traits', 'interface' => 'interfaces');
+            foreach ($map as $col) {
+                $path = $this->xmlDir . '/' . $col;
+                if (!file_exists($path)) {
+                    mkdir($path, 0755, TRUE);
+                }
+            }
+            return $map;
+        }
         /**
          * @return void
          */
@@ -335,6 +345,27 @@ namespace TheSeer\phpDox\Collector {
                 }
                 $node->parentNode->removeChild($node);
             }
+        }
+
+        private function saveSources() {
+            foreach($this->files as $file) {
+                $tokenDom = $file->getTokens();
+                $tokenDom->formatOutput = TRUE;
+                $tokenDom->preserveWhiteSpace = FALSE;
+                $relName = 'tokens/' . $file->getRelative($this->srcDir, FALSE) . '.xml';
+                $fname = $this->xmlDir . '/' . $relName;
+                $dir = dirname($fname);
+                if (!file_exists($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+                $tokenDom->save($fname);
+                $this->source->setTokenFileReference($file, $relName);
+            }
+
+            $sourceDom = $this->source->export();
+            $sourceDom->formatOutput = TRUE;
+            $sourceDom->preserveWhiteSpace = FALSE;
+            $sourceDom->save($this->xmlDir . '/source.xml');
         }
 
     }

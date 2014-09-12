@@ -4,6 +4,8 @@ phpDox
 *phpDox* is a documentation generator for generating API documentation in HTML format, for instance, from PHP source code.
 
 
+[![Build Status](https://travis-ci.org/theseer/phpdox.svg?branch=master)](https://travis-ci.org/theseer/phpdox)
+
 Requirements
 ------------
 
@@ -16,7 +18,6 @@ Requirements
 - [DirectoryScanner](http://github.com/theseer/DirectoryScanner)
 - [fXSL](http://github.com/theseer/fXSL)
 - [PHP_Timer](http://github.com/sebastianbergmann/php-timer)
-- Zeta Components [ConsoleTools](http://zetac.org/ConsoleTools)
 
 
 User Installation
@@ -24,18 +25,26 @@ User Installation
 
 phpDox is shipping as a selfcontained executable phar archive. You can grab your copy here:
 
-- [Release 0.6.6](http://phpdox.de/releases/phpdox.phar)
+- [Release 0.7.0](http://phpdox.de/releases/phpdox.phar)
 
+Installation is simple:
 
-    > wget http://phpdox.de/releases/phpdox.phar
-    > chmod +x phpdox.phar
-    > sudo mv phpdox.phar /usr/bin/phpdox
+    wget http://phpdox.de/releases/phpdox.phar
+    chmod +x phpdox.phar
+    sudo mv phpdox.phar /usr/bin/phpdox
 
-    > phpdox --version
-    phpDox 0.6.6 - Copyright (C) 2010 - 2014 by Arne Blankerts
+You can now execute phpdox on the command line:
+
+    phpdox --version
+
+If everything worked out, you should get an output like this:
+
+    phpDox 0.7.0 - Copyright (C) 2010 - 2014 by Arne Blankerts
 
 
 _Note: Starting with release 0.6.6 the pear package distribution is merely a wrapper for the selfcontained phar._
+
+_Note: Some Linux distributions ship PHP with ext/suhosin and disabled phar execution. To make use of phpDox in such an environment, you need to enable phar execution by adding phar to the executor white list: suhosin.executor.include.whitelist="phar"_
 
 Developer Installation
 ----------------------
@@ -46,8 +55,8 @@ _Note: The `phpdox.php` bootstrap file assumes that all depedencies have been in
 In case you do clone the source repository and used composer for the dependency management, you have to use the provided
 wrapper in composer/bin/phpdox._
 
-    > git clone git://github.com/theseer/phpdox.git
-    > composer install
+    git clone git://github.com/theseer/phpdox.git
+    composer install
 
 
 Usage Examples
@@ -70,6 +79,24 @@ Sample invocation to parse and generate output based on the default phpdox.xml c
 
 Changelog
 ---------
+#####Release 0.7.0
+
+* Fix: Set default resolution of ${basename} to dirname of realpath of config file instead of only relative dir
+* Fix: Crash on invalid encoding / control chars in source (Issue #146, #148)
+* Fix: Crash on empty namespace name (Issue #150)
+* Fix: Broken cache handling for files that no longer exist (Issue #149)
+* Fix: DocBlock parsing generates invalid tag names in xml in some cases (Thanks to Reno Reckling)
+* Fix: Crash on custom bootstrapping (Thanks to Sebastian Heuer)
+* Updated Templates
+* Added tokenizer xml and highlighted source output
+* Added support for native PHPCS xml format (Thanks to Reno Reckling)
+* Removed dependency to Zeta Components by own (simplified) implementation
+* Unified xml namespace uri format by stripping the # where it was still in place
+* Minor performance tweaks
+
+#####Release 0.6.6.1 (composer only)
+
+* Fix: Issue with composer based installs
 
 #####Release 0.6.6
 

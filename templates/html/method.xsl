@@ -1,6 +1,6 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:pdx="http://xml.phpdox.net/src#"
+                xmlns:pdx="http://xml.phpdox.net/src"
                 xmlns:pdxf="http://xml.phpdox.net/functions"
                 xmlns:pu="http://schema.phpunit.de/coverage/1.0"
                 exclude-result-prefixes="pdx pdxf">
@@ -136,6 +136,10 @@
                 <xsl:if test="$method//pdx:todo">
                     <li><a href="#tasks">Tasks</a></li>
                 </xsl:if>
+                <xsl:if test="$unit/@start"><!-- hack: test for start line == we know something about this class -->
+                    <li><a href="{$base}source/{$unit/pdx:file/@relative}.xhtml#line{$method/@start}">Source</a></li>
+                </xsl:if>
+
             </ul>
         </nav>
     </xsl:template>
