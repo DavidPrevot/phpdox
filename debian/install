@@ -1,4 +1,4 @@
-# bootstrap/*	usr/share/php/TheSeer/phpDox/bootstrap
+bootstrap	usr/share/php/TheSeer
 dependencies	usr/share/php/TheSeer/phpDox
 phpdox		usr/bin
 src/*		usr/share/php/TheSeer/phpDox

@@ -1,0 +1,21 @@
+From: =?utf-8?q?David_Pr=C3=A9vot?= <taffit@debian.org>
+Date: Mon, 29 Sep 2014 17:17:08 -0400
+Subject: Adapt to actual PhpParser path
+
+---
+ bootstrap/backends.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/bootstrap/backends.php b/bootstrap/backends.php
+index 3301276..04b137e 100644
+--- a/bootstrap/backends.php
++++ b/bootstrap/backends.php
+@@ -41,7 +41,7 @@ namespace TheSeer\phpDox {
+ 
+     // nikic's PHPParser
+     if (!class_exists('PhpParser\Autoloader', true)) {
+-        $phpParser = stream_resolve_include_path('PHPParser/bootstrap.php');
++        $phpParser = stream_resolve_include_path('PhpParser/bootstrap.php');
+         if ($phpParser !== FALSE) {
+             require $phpParser;
+         }
