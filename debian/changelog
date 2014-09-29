@@ -1,3 +1,12 @@
+phpdox (0.7.0-2) unstable; urgency=medium
+
+  * Install actually needed bootstrap
+  * Drop now useless XS-Testsuite
+  * Bump standards version to 3.9.6
+  * Drop now useless references to ZetaComponents
+
+ -- David Prévot <taffit@debian.org>  Mon, 29 Sep 2014 17:28:27 -0400
+
 phpdox (0.7.0-1) unstable; urgency=medium
 
   [ Arne Blankerts ]
