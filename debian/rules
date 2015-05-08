@@ -11,9 +11,6 @@ else
 	echo "** tests disabled"
 endif
 
-override_dh_installchangelogs:
-	dh_installchangelogs -k README.markdown
-
 override_dh_installman:
 	mkdir debian/tmp
 	cd debian/phpdox/usr/share/php && \
