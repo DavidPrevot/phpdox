@@ -1,6 +1,6 @@
 <?php
     /**
-     * Copyright (c) 2010-2014 Arne Blankerts <arne@blankerts.de>
+     * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
      * All rights reserved.
      *
      * Redistribution and use in source and binary forms, with or without modification,
@@ -132,7 +132,8 @@ EOF;
                 'f' => 'file',
                 'h' => 'help',
                 'c' => 'collector',
-                'g' => 'generator'
+                'g' => 'generator',
+                'v' => 'version'
             );
             $valueOptions = array(
                 'file'
@@ -159,14 +160,14 @@ EOF;
             foreach($argv as $arg) {
                 if ($arg[0] == '-') {
                     if ($arg[1] == '-') {
-                        $argName = substr($arg, 2);
+                        $argName = mb_substr($arg, 2);
                         if (!in_array($argName, $options)) {
                             throw new CLIOptionsException(
                                 sprintf('Option "%s" is not defined', $argName)
                             );
                         }
                     } else {
-                        $argChar = substr($arg, 1);
+                        $argChar = mb_substr($arg, 1);
                         if (!isset($shortMap[$argChar])) {
                             throw new CLIOptionsException(
                                 sprintf('Option "%s" is not defined', $argChar)
@@ -198,7 +199,5 @@ EOF;
         }
 
     }
-
-    class CLIOptionsException extends \Exception {}
 
 }

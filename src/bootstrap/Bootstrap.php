@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010-2014 Arne Blankerts <arne@blankerts.de>
+ * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,7 +40,7 @@ namespace TheSeer\phpDox {
 
     class Bootstrap {
 
-        public function __construct(ProgressLogger $logger, BootstrapApi $api) {
+        public function __construct(SilentProgressLogger $logger, BootstrapApi $api) {
             $this->logger = $logger;
             $this->api = $api;
         }
@@ -88,10 +88,6 @@ namespace TheSeer\phpDox {
             /** @noinspection PhpIncludeInspection */
             require $filename;
         }
-    }
-
-    class BootstrapException extends \Exception {
-        const RequireFailed = 1;
     }
 
 }

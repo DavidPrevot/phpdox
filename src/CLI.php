@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010-2014 Arne Blankerts <arne@blankerts.de>
+ * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,7 +40,6 @@
  * @license    BSD License
  *
  */
-
 namespace TheSeer\phpDox {
 
     use TheSeer\fDOM\fDOMDocument;
@@ -49,13 +48,29 @@ namespace TheSeer\phpDox {
     class CLI {
 
         /**
+         * @var Environment
+         */
+        private $environment;
+
+        /**
+         * @var Version
+         */
+        private $version;
+
+        /**
          * Factory instance
          *
          * @var Factory
          */
-        protected $factory;
+        private $factory;
 
-        public function __construct(Factory $factory) {
+        /**
+         * @param Environment $env
+         * @param Factory     $factory
+         */
+        public function __construct(Environment $env, Version $version, Factory $factory) {
+            $this->environment = $env;
+            $this->version = $version;
             $this->factory = $factory;
         }
 
@@ -63,10 +78,10 @@ namespace TheSeer\phpDox {
          * Main executor for CLI process.
          */
         public function run(CLIOptions $options) {
-            $errorHandler = $this->factory->getInstanceFor('ErrorHandler');
+            $errorHandler = $this->factory->getErrorHandler();
             $errorHandler->register();
             try {
-                $this->preBootstrap();
+                $this->environment->ensureFitness();
 
                 if ($options->showHelp() === TRUE) {
                     $this->showVersion();
@@ -84,7 +99,7 @@ namespace TheSeer\phpDox {
                     exit(0);
                 }
 
-                $cfgLoader = $this->factory->getInstanceFor('ConfigLoader');
+                $cfgLoader = $this->factory->getConfigLoader();
                 $cfgFile = $options->configFile();
                 if ($cfgFile != '') {
                     $config = $cfgLoader->load($cfgFile);
@@ -94,17 +109,16 @@ namespace TheSeer\phpDox {
 
                 /** @var $config GlobalConfig */
                 if ($config->isSilentMode()) {
-                    $this->factory->setLoggerType('silent');
+                    $this->factory->activateSilentMode();
                 } else {
                     $this->showVersion();
-                    $this->factory->setLoggerType('shell');
                 }
 
-                $logger = $this->factory->getInstanceFor('Logger');
+                $logger = $this->factory->getLogger();
                 $logger->log("Using config file '". $config->getConfigFile()->getPathname() . "'");
 
                 /** @var Application $app */
-                $app = $this->factory->getInstanceFor('Application');
+                $app = $this->factory->getApplication();
 
                 $defBootstrapFiles = new FileInfoCollection();
                 $defBootstrapFiles->add(new FileInfo(__DIR__ . '/../bootstrap/backends.php'));
@@ -133,32 +147,31 @@ namespace TheSeer\phpDox {
                     exit(0);
                 }
 
-                foreach($config->getAvailableProjects() as $project) {
-                    $logger->log("Starting to process project '$project'");
-                    $pcfg = $config->getProjectConfig($project);
+                foreach($config->getProjects() as $projectName => $projectConfig) {
 
-                    $index = new FileInfo($pcfg->getWorkDirectory() . '/index.xml');
-                    if ($index->exists() && ($index->getMTime() < $config->getConfigFile()->getMTime())) {
-                        $logger->log("Configuration change detected - cleaning cache");
-                        $cleaner = new DirectoryCleaner();
-                        $cleaner->process(new FileInfo($pcfg->getWorkDirectory()));
-                    }
+                    /** @var ProjectConfig $projectConfig */
+                    $logger->log("Starting to process project '$projectName'");
+
+                    $app->runConfigChangeDetection(
+                        $projectConfig->getWorkDirectory(),
+                        $config->getConfigFile()
+                    );
 
                     if (!$options->generatorOnly()) {
-                        $app->runCollector( $pcfg->getCollectorConfig() );
+                        $app->runCollector( $projectConfig->getCollectorConfig() );
                     }
 
                     if (!$options->collectorOnly()) {
-                        $app->runGenerator( $pcfg->getGeneratorConfig() );
+                        $app->runGenerator( $projectConfig->getGeneratorConfig() );
                     }
 
-                    $logger->log("Processing project '$project' completed.");
+                    $logger->log("Processing project '$projectName' completed.");
 
                 }
 
                 $logger->buildSummary();
 
-            } catch (CLIEnvironmentException $e) {
+            } catch (EnvironmentException $e) {
                 $this->showVersion();
                 fwrite(STDERR, 'Sorry, but your PHP environment is currently not able to run phpDox due to');
                 fwrite(STDERR, "\nthe following issue(s):\n\n" . $e->getMessage() . "\n\n");
@@ -171,7 +184,10 @@ namespace TheSeer\phpDox {
                 exit(3);
             } catch (ConfigLoaderException $e) {
                 $this->showVersion();
-                fwrite(STDERR, "\nAn error occured while trying to load the configuration file:\n\t" . $e->getMessage()."\n\nUsing --skel might get you started.\n\n");
+                fwrite(STDERR, "\nAn error occured while trying to load the configuration file:\n\n" . $e->getMessage(). "\n\n");
+                if ($e->getCode() == ConfigLoaderException::NeitherCandidateExists) {
+                    fwrite(STDERR, "Using --skel might get you started.\n\n");
+                }
                 exit(3);
             } catch (ConfigException $e) {
                 fwrite(STDERR, "\nYour configuration seems to be corrupted:\n\n\t" . $e->getMessage()."\n\nPlease verify your configuration xml file.\n\n");
@@ -191,32 +207,21 @@ namespace TheSeer\phpDox {
         /**
          * Helper to output version information.
          */
-        protected function showVersion() {
+        private function showVersion() {
             static $shown = FALSE;
             if ($shown) {
                 return;
             }
             $shown = TRUE;
-            echo Version::getInfoString() . "\n\n";
+            echo $this->version->getInfoString() . "\n\n";
         }
 
-        protected function showSkeletonConfig($strip) {
-            $config = file_get_contents(__DIR__ . '/config/skeleton.xml');
-            if ($strip) {
-                $dom = new fDOMDocument();
-                $dom->loadXML($config);
-                foreach($dom->query('//comment()') as $c) {
-                    $c->parentNode->removeChild($c);
-                }
-                $dom->preserveWhiteSpace = FALSE;
-                $dom->formatOutput = TRUE;
-                $dom->loadXML($dom->saveXML());
-                $config = $dom->saveXML();
-            }
-            echo $config;
+        private function showSkeletonConfig($strip) {
+            $skel = $this->factory->getConfigSkeleton();
+            echo $strip ? $skel->renderStripped() : $skel->render();
         }
 
-        protected function showList($title, Array $list) {
+        private function showList($title, Array $list) {
             echo "\nThe following $title are registered:\n\n";
             foreach($list as $name => $desc) {
                 printf("   %s \t %s\n", $name, $desc);
@@ -224,45 +229,6 @@ namespace TheSeer\phpDox {
             echo "\n\n";
         }
 
-        private function preBootstrap() {
-            $required = array('tokenizer', 'iconv', 'fileinfo', 'libxml', 'dom', 'xsl','mbstring');
-            $missing = array();
-            foreach($required as $test) {
-                if (!extension_loaded($test)) {
-                    $missing[] = sprintf('ext/%s not installed/enabled', $test);
-                }
-            }
-            if (count($missing)) {
-                throw new CLIEnvironmentException(
-                    join("\n", $missing),
-                    CLIEnvironmentException::ExtensionMissing
-                );
-            }
-
-            if (extension_loaded('xdebug')) {
-                ini_set('xdebug.scream', 0);
-                ini_set('xdebug.max_nesting_level', 8192);
-                ini_set('xdebug.show_exception_trace', 0);
-                xdebug_disable();
-            }
-
-            try {
-                date_default_timezone_set(date_default_timezone_get());
-            } catch (\ErrorException $e) {
-                date_default_timezone_set('UTC');
-                throw new CLIEnvironmentException(
-                    "No default date.timezone configured in php.ini.",
-                    CLIEnvironmentException::DateTimeZoneMissing,
-                    $e
-                );
-            }
-        }
-
-    }
-
-    class CLIEnvironmentException extends \Exception {
-        const ExtensionMissing = 1;
-        const DateTimeZoneMissing = 2;
     }
 
 }

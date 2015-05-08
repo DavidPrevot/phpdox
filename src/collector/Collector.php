@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010-2014 Arne Blankerts <arne@blankerts.de>
+ * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -48,7 +48,7 @@ namespace TheSeer\phpDox\Collector {
     class Collector {
 
         /**
-         * @var \TheSeer\phpDox\ProgressLogger
+         * @var ProgressLogger
          */
         private $logger;
 
@@ -67,29 +67,35 @@ namespace TheSeer\phpDox\Collector {
          */
         private $backend;
 
+        /**
+         * @var string
+         */
+        private $encoding;
 
         /**
-         * @param \TheSeer\phpDox\ProgressLogger  $logger
-         * @param Project $project
+         * @param ProgressLogger   $logger
+         * @param Project          $project
+         * @param BackendInterface $backend
+         * @param                  $encoding
          */
-        public function __construct(ProgressLogger $logger, Project $project) {
+        public function __construct(ProgressLogger $logger, Project $project, BackendInterface $backend, $encoding) {
             $this->logger = $logger;
             $this->project = $project;
+            $this->backend = $backend;
+            $this->encoding = $encoding;
         }
 
         /**
          * @param DirectoryScanner $scanner
-         * @param BackendInterface $backend
          *
          * @return Project
          */
-        public function run(DirectoryScanner $scanner, BackendInterface $backend) {
-            $this->backend = $backend;
+        public function run(DirectoryScanner $scanner) {
 
             $srcDir = $this->project->getSourceDir();
             $this->logger->log("Scanning directory '{$srcDir}' for files to process\n");
 
-            $iterator = new SourceFileIterator($scanner($srcDir), $srcDir);
+            $iterator = new SourceFileIterator($scanner($srcDir), $srcDir, $this->encoding);
             foreach($iterator as $file) {
                 $needsProcessing = $this->project->addFile($file);
                 if (!$needsProcessing) {

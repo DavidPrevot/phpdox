@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010-2014 Arne Blankerts <arne@blankerts.de>
+ * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -60,7 +60,7 @@ namespace TheSeer\phpDox\Generator\Engine {
             $path = dirname($filename);
             clearstatcache();
             if (!file_exists($path)) {
-                mkdir($path, 0755, true);
+                mkdir($path, 0777, true);
             }
             $dom->formatOutput = $format;
             return $dom->save($filename);
@@ -70,13 +70,13 @@ namespace TheSeer\phpDox\Generator\Engine {
             $path = dirname($filename);
             clearstatcache();
             if (!file_exists($path)) {
-                mkdir($path, 0755, true);
+                mkdir($path, 0777, true);
             }
             return file_put_contents($filename, $content);
         }
 
         protected function copyStatic($path, $dest, $recursive = true) {
-            $len  = strlen($path);
+            $len  = mb_strlen($path);
             if ($recursive) {
                 $worker = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
             } else {
@@ -86,9 +86,9 @@ namespace TheSeer\phpDox\Generator\Engine {
                 if($x->isDir() && ($x->getFilename() == "." || $x->getFilename() == "..")) {
                     continue;
                 }
-                $target = $dest . substr($x->getPathname(), $len);
+                $target = $dest . mb_substr($x->getPathname(), $len);
                 if (!file_exists(dirname($target))) {
-                    mkdir(dirname($target), 0755, true);
+                    mkdir(dirname($target), 0777, true);
                 }
                 copy($x->getPathname(), $target);
             }

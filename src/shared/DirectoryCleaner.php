@@ -4,29 +4,35 @@ namespace TheSeer\phpDox {
     class DirectoryCleaner {
 
         public function process(FileInfo $path) {
-            if (strlen($path->getPathname()) < 5) {
+            if (mb_strlen($path->getPathname()) < 5) {
                 throw new DirectoryCleanerException(
                     'For security reasons, path must be at least 5 chars long',
                     DirectoryCleanerException::SecurityLimitation
                 );
             }
-            if (!file_exists($path)) {
+
+            if (!$path->exists()) {
                 return;
             }
-            $worker = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path->getPathname()));
-            foreach($worker as $x) {
-                if($x->getFilename() == "." || $x->getFilename() == "..") {
-                    continue;
+
+            $worker = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator(
+                    $path->getPathname(),
+                    \FilesystemIterator::SKIP_DOTS
+                ),
+                \RecursiveIteratorIterator::CHILD_FIRST
+            );
+
+            foreach($worker as $entry) {
+                if ($entry->isDir() && !$entry->isLink()) {
+                    rmdir($entry->getPathname());
+                } else {
+                    unlink($entry->getPathname());
                 }
-                if ($x->isDir()) {
-                    $this->clearDirectory(new FileInfo($x->getPathname()));
-                }
-                unlink($x->getPathname());
             }
+            rmdir($path);
         }
+
     }
 
-    class DirectoryCleanerException extends \Exception {
-        const SecurityLimitation = 1;
-    }
 }

@@ -95,15 +95,15 @@
                 <h4>Extends</h4>
                 <ul>
                     <xsl:for-each select="$unit/pdx:extends">
-                        <li><a href="{$base}{$dir}/{translate(@full, '\', '_')}.{$extension}"><xsl:value-of select="@full" /></a></li>
+                        <li><xsl:copy-of select="pdxf:link(., '', @full)" /></li>
                     </xsl:for-each>
                 </ul>
             </xsl:if>
             <xsl:if test="$unit/pdx:extender">
                 <h4>Extended by</h4>
                 <ul>
-                    <xsl:for-each select="$unit/pdx:extender">
-                        <li><a href="{$base}{$dir}/{translate(@full, '\', '_')}.{$extension}"><xsl:value-of select="@full" /></a></li>
+                    <xsl:for-each select="$unit/pdx:extender/*">
+                        <li><xsl:copy-of select="pdxf:link(., '', @full)" /></li>
                     </xsl:for-each>
                 </ul>
             </xsl:if>
@@ -111,7 +111,7 @@
                 <h4>Uses</h4>
                 <ul>
                     <xsl:for-each select="$unit/pdx:uses">
-                        <li><a href="{$base}traits/{translate(@full, '\', '_')}.{$extension}"><xsl:value-of select="@full" /></a></li>
+                        <li><xsl:copy-of select="pdxf:link(., '', @full)" /></li>
                     </xsl:for-each>
                 </ul>
             </xsl:if>
@@ -119,7 +119,7 @@
                 <h4>Implements</h4>
                 <ul>
                     <xsl:for-each select="$unit/pdx:implements">
-                        <li><a href="{$base}interfaces/{translate(@full, '\', '_')}.{$extension}"><xsl:value-of select="@full" /></a></li>
+                        <li><xsl:copy-of select="pdxf:link(., '', @full)" /></li>
                     </xsl:for-each>
                 </ul>
             </xsl:if>
@@ -127,7 +127,15 @@
                 <h4>Implemented by</h4>
                 <ul>
                     <xsl:for-each select="$unit/pdx:implementor">
-                        <li><a href="{$base}classes/{translate(@full, '\', '_')}.{$extension}"><xsl:value-of select="@full" /></a></li>
+                        <li><xsl:copy-of select="pdxf:link(., '', @full)" /></li>
+                    </xsl:for-each>
+                </ul>
+            </xsl:if>
+            <xsl:if test="$unit/pdx:users">
+                <h4>Used by</h4>
+                <ul>
+                    <xsl:for-each select="$unit/pdx:users/*">
+                        <li><xsl:copy-of select="pdxf:link(., '', @full)" /></li>
                     </xsl:for-each>
                 </ul>
             </xsl:if>
@@ -233,7 +241,10 @@
                 <xsl:for-each select="//pdx:constant">
                     <tr>
                         <td id="{@name}"><xsl:value-of select="@name" /></td>
-                        <td><xsl:value-of select="@value" /></td>
+                        <td><xsl:choose>
+                            <xsl:when test="@value = ''"><xsl:value-of select="@constant" /></xsl:when>
+                            <xsl:otherwise><xsl:value-of select="@value" /></xsl:otherwise>
+                        </xsl:choose></td>
                     </tr>
                 </xsl:for-each>
             </tbody>
@@ -283,7 +294,8 @@
                 —
                 <xsl:choose>
                     <xsl:when test="pdx:docblock/pdx:var/@type = 'object'">
-                        <a href="#"><xsl:value-of select="pdx:docblock/pdx:var/pdx:type/@full" /></a>
+                        <xsl:variable name="ctx" select="pdx:docblock/pdx:var/pdx:type" />
+                        <xsl:copy-of select="pdxf:link($ctx, '', $ctx/@full)" />
                     </xsl:when>
                     <xsl:otherwise><xsl:value-of select="pdx:docblock/pdx:var/@type" /></xsl:otherwise>
                 </xsl:choose>
@@ -355,7 +367,13 @@
 
     <xsl:template name="method-li">
         <li id="{@name}">
-            <xsl:copy-of select="pdxf:link(parent::*[1], @name, concat(@name, '()'))" />
+            <xsl:variable name="title">
+            <xsl:choose>
+                <xsl:when test="@original"><xsl:value-of select="@original" /></xsl:when>
+                <xsl:otherwise><xsl:value-of select="@name" /></xsl:otherwise>
+            </xsl:choose>
+            </xsl:variable>
+            <xsl:copy-of select="pdxf:link(parent::*[1], $title, concat(@name, '()'))" />
             <xsl:if test="pdx:docblock/pdx:description/@compact != ''">
                 — <xsl:value-of select="pdx:docblock/pdx:description/@compact" />
             </xsl:if>
@@ -367,7 +385,7 @@
     <xsl:template name="inheritedMethods">
         <xsl:param name="ctx" />
 
-        <xsl:for-each select="//pdx:parent">
+        <xsl:for-each select="//pdx:parent|$unit//pdx:trait">
             <xsl:variable name="parent" select="." />
 
             <xsl:if test="count($parent/pdx:method) > 0">
