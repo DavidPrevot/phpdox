@@ -1,0 +1,45 @@
+From: =?utf-8?q?David_Pr=C3=A9vot?= <david@tilapin.org>
+Date: Fri, 8 May 2015 10:56:38 -0400
+Subject: Adapt to actual autoload.php
+
+Forwarded: not-needed
+---
+ phpdox | 21 ++-------------------
+ 1 file changed, 2 insertions(+), 19 deletions(-)
+
+diff --git a/phpdox b/phpdox
+index bc2d061..581c0fc 100755
+--- a/phpdox
++++ b/phpdox
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env php
++#!/usr/bin/php
+ <?php
+ /**
+  * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
+@@ -40,24 +40,7 @@
+  *
+  */
+ 
+-require __DIR__ . '/src/autoload.php';
+-
+-$found = false;
+-foreach(array(__DIR__ . '/vendor', __DIR__ . '/../../../vendor') as $vendor) {
+-    if (file_exists($vendor)) {
+-        $found = true;
+-        require __DIR__ . '/src/vendor.php';
+-    }
+-}
+-
+-if (!$found) {
+-    fwrite(STDERR,
+-        'You need to set up the project dependencies using the following commands:' . PHP_EOL .
+-        'wget http://getcomposer.org/composer.phar' . PHP_EOL .
+-        'php composer.phar install' . PHP_EOL
+-    );
+-    die(1);
+-}
++require 'TheSeer/phpDox/autoload.php';
+ 
+ $factory = new TheSeer\phpDox\Factory(
+     new \TheSeer\phpDox\FileInfo(__DIR__),

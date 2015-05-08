@@ -1,0 +1,22 @@
+From: =?utf-8?q?David_Pr=C3=A9vot?= <david@tilapin.org>
+Date: Fri, 8 May 2015 12:21:21 -0400
+Subject: Adpapt to actual templates path
+
+Forwarded: not-needed
+---
+ src/generator/engine/html/HtmlConfig.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/generator/engine/html/HtmlConfig.php b/src/generator/engine/html/HtmlConfig.php
+index a8e04f8..4d88f08 100644
+--- a/src/generator/engine/html/HtmlConfig.php
++++ b/src/generator/engine/html/HtmlConfig.php
+@@ -39,7 +39,7 @@ namespace TheSeer\phpDox\Generator\Engine {
+     class HtmlConfig extends \TheSeer\phpDox\BuildConfig {
+ 
+         public function getTemplateDirectory() {
+-            $default = $this->getGeneratorConfig()->getProjectConfig()->getHomeDirectory()->getPathname();
++            $default = '/usr/share/php/TheSeer/phpDox';
+             $default .= '/templates/html';
+             $node = $this->ctx->queryOne('cfg:template');
+             if (!$node) {
