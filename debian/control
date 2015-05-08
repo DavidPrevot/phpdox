@@ -10,6 +10,7 @@ Build-Depends: ant,
                php-directory-scanner,
                php-fdomdocument,
                php-fxsl,
+               php-parser,
                php-timer,
                phpunit,
                pkg-php-tools (>= 1.7~)
