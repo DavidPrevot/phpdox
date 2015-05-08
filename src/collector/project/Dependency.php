@@ -12,7 +12,7 @@ namespace TheSeer\phpDox\Collector {
 
         public function __construct(fDOMDocument $dom, Project $project) {
             $this->index = $dom;
-            $this->baseDir = dirname($dom->documentURI);
+            $this->baseDir = dirname(urldecode($dom->documentURI));
             $this->index->registerNamespace('phpdox', 'http://xml.phpdox.net/src');
             $this->project = $project;
         }
@@ -64,11 +64,6 @@ namespace TheSeer\phpDox\Collector {
             return $unit;
         }
 
-    }
-
-    class DependencyException extends \Exception {
-        const UnitNotFound = 1;
-        const InvalidUnitType = 2;
     }
 
 }

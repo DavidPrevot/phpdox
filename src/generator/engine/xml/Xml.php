@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010-2014 Arne Blankerts <arne@blankerts.de>
+ * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -42,6 +42,7 @@ namespace TheSeer\phpDox\Generator\Engine {
     use TheSeer\phpDox\Generator\ClassStartEvent;
     use TheSeer\phpDox\Generator\InterfaceStartEvent;
     use TheSeer\phpDox\Generator\PHPDoxEndEvent;
+    use TheSeer\phpDox\Generator\TokenFileStartEvent;
     use TheSeer\phpDox\Generator\TraitStartEvent;
 
     class Xml extends AbstractEngine {
@@ -57,6 +58,7 @@ namespace TheSeer\phpDox\Generator\Engine {
             $registry->addHandler('class.start', $this, 'handle');
             $registry->addHandler('trait.start', $this, 'handle');
             $registry->addHandler('interface.start', $this, 'handle');
+            $registry->addHandler('token.file.start', $this, 'handleToken');
         }
 
         public function handle(AbstractEvent $event) {
@@ -84,6 +86,14 @@ namespace TheSeer\phpDox\Generator\Engine {
         public function handleIndex(PHPDoxEndEvent $event) {
             $dom = $event->getIndex()->asDom();
             $this->saveDomDocument($dom, $this->outputDir . '/index.xml');
+        }
+
+        public function handleToken(TokenFileStartEvent $event) {
+            $dom = $event->getTokenFile()->asDom();
+            $this->saveDomDocument($dom,
+                $this->outputDir . '/tokens/' . $dom->queryOne('//phpdox:file')->getAttribute('relative') . '.xml'
+            );
+
         }
     }
 

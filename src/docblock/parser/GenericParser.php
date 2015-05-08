@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010-2014 Arne Blankerts <arne@blankerts.de>
+ * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -45,7 +45,7 @@ namespace TheSeer\phpDox\DocBlock {
         protected $payload;
 
         private $types = array(
-            '', 'mixed', '{unknown}', 'object', 'array', 'integer', 'int', 'float', 'string', 'boolean', 'resource'
+            '', 'mixed', '{unknown}', 'object', 'array', 'integer', 'int', 'float', 'string', 'boolean', 'resource', 'static'
         );
 
         public function __construct(Factory $factory, $name) {
@@ -76,6 +76,10 @@ namespace TheSeer\phpDox\DocBlock {
         }
 
         protected function lookupType($type) {
+            if ($type === 'self' || $type === 'static') {
+                return $this->aliasMap['::unit'];
+            }
+
             // Do not mess with scalar and fixed types
             if (in_array($type, $this->types)) {
                 return $type;

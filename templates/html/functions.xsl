@@ -16,6 +16,10 @@
                 <xsl:when test="local-name($ctx) = 'uses'">traits</xsl:when>
                 <xsl:when test="local-name($ctx) = 'interface'">interfaces</xsl:when>
 
+                <xsl:when test="local-name($ctx) = 'interface'">interfaces</xsl:when>
+                <xsl:when test="local-name($ctx) = 'trait'">traits</xsl:when>
+                <xsl:when test="local-name($ctx) = 'class'">classes</xsl:when>
+
                 <xsl:when test="local-name($unit) = 'interface'">interfaces</xsl:when>
                 <xsl:when test="local-name($unit) = 'class'">classes</xsl:when>
                 <xsl:when test="local-name($unit) = 'trait'">traits</xsl:when>
@@ -37,7 +41,12 @@
             </xsl:choose>
         </xsl:variable>
 
-        <func:result><a title="{$ctx/@full}" href="{$link}"><xsl:value-of select="$text" /></a></func:result>
+        <func:result>
+            <xsl:choose>
+                <xsl:when test="$ctx/@unresolved = 'true'"><xsl:value-of select="$text" /></xsl:when>
+                <xsl:otherwise><a title="{$ctx/@full}" href="{$link}"><xsl:value-of select="$text" /></a></xsl:otherwise>
+            </xsl:choose>
+        </func:result>
     </func:function>
 
     <func:function name="pdxf:nl2br">

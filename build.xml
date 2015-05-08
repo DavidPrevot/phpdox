@@ -18,7 +18,17 @@
 
     <target name="phpab">
         <exec executable="phpab">
-            <arg line='--cache ${basedir}/build/autoload.cache -o src/autoload.php src'/>
+            <arg line="--cache ${basedir}/build/phpab/autoload.cache -o src/autoload.php" />
+            <arg path="src" />
+        </exec>
+        <exec executable="phpab">
+            <arg line="--cache ${basedir}/build/phpab/autoload.cache" />
+            <arg line="-o src/vendor.php" />
+            <arg line="-b vendor" />
+            <arg line="-t ${basedir}/build/phpab/vendor.tpl" />
+            <arg path="vendor/phpunit/php-timer/PHP" />
+            <arg path="vendor/nikic/php-parser/lib" />
+            <arg path="vendor/theseer/*/src" />
         </exec>
     </target>
 
@@ -84,7 +94,7 @@
 
         <exec executable="bash" outputproperty="version">
             <arg value="-c"/>
-            <arg value="${basedir}/phpdox.php --version | awk 'BEGIN { ORS = &quot;&quot;; } {print $2}'"/>
+            <arg value="${basedir}/phpdox --version | awk 'BEGIN { ORS = &quot;&quot;; } {print $2}'"/>
         </exec>
 
         <move file="${basedir}/build/phar/phpdox-${version}.phar" tofile="${basedir}/build/pear/_tmp/phpdox.phar" />
@@ -111,7 +121,7 @@
 
     <target name="api">
         <delete dir="${basedir}/build/api" />
-        <exec executable="${basedir}/phpdox.php" />
+        <exec executable="${basedir}/phpdox" />
     </target>
 
     <target name="phar" description="Create PHAR archive of phpDox and its dependencies">
@@ -127,14 +137,8 @@
 
         <exec executable="bash" outputproperty="version">
             <arg value="-c"/>
-            <arg value="${basedir}/phpdox.php --version | awk 'BEGIN { ORS = &quot;&quot;; } {print $2}'"/>
+            <arg value="${basedir}/phpdox --version | awk 'BEGIN { ORS = &quot;&quot;; } {print $2}'"/>
         </exec>
-
-        <untar dest="${basedir}/build/phar/_tmp" compression="gzip">
-            <fileset dir="${basedir}/build/phar/dependencies">
-                <include name="**/*.tgz"/>
-            </fileset>
-        </untar>
 
         <copy todir="${basedir}/build/phar/_tmp/phpdox">
             <fileset dir="${basedir}/src"/>
@@ -145,8 +149,15 @@
         <copy todir="${basedir}/build/phar/_tmp/templates">
             <fileset dir="${basedir}/templates"/>
         </copy>
-        <copy todir="${basedir}/build/phar/_tmp/dependencies">
+         <copy todir="${basedir}/build/phar/_tmp/dependencies">
             <fileset dir="${basedir}/dependencies"/>
+        </copy>
+        <copy todir="${basedir}/build/phar/_tmp/vendor">
+            <fileset dir="${basedir}/vendor">
+                <include name="nikic/php-parser/lib/**" />
+                <include name="phpunit/php-timer/PHP/**" />
+                <include name="theseer/*/src/**" />
+            </fileset>
         </copy>
 
         <delete>
@@ -161,8 +172,6 @@
                 <include name="**/docs/**"/>
                 <include name="**/design/**"/>
                 <include name="**/grammar/**"/>
-                <include name="**/tests/**"/>
-                <include name="**/tests_old/**"/>
             </fileset>
         </delete>
 

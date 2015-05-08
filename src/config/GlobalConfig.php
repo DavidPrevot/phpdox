@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010-2014 Arne Blankerts <arne@blankerts.de>
+ * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -43,6 +43,17 @@ namespace TheSeer\phpDox {
     class GlobalConfig {
 
         /**
+         * @var Version
+         */
+        private $version;
+
+        /**
+         * Directory of phpDox home
+         * @var Fileinfo
+         */
+        private $homeDir;
+
+        /**
          * @var fDOMDocument
          */
         private $cfg;
@@ -56,10 +67,20 @@ namespace TheSeer\phpDox {
         /**
          * Constructor for global config
          *
-         * @param fDOMDocument $cfg   A configuration dom
-         * @param FileInfo     $file  FileInfo of the cfg file
+         * @param Version      $version
+         * @param FileInfo     $home
+         * @param fDOMDocument $cfg  A configuration dom
+         * @param FileInfo     $file FileInfo of the cfg file
+         *
+         * @throws ConfigException
          */
-        public function __construct(fDOMDocument $cfg, FileInfo $file) {
+        public function __construct(Version $version, FileInfo $home, fDOMDocument $cfg, FileInfo $file) {
+            if ($cfg->documentElement->nodeName != 'phpdox' ||
+                $cfg->documentElement->namespaceURI != 'http://xml.phpdox.net/config') {
+                throw new ConfigException("Not a valid phpDox configuration", ConfigException::InvalidDataStructure);
+            }
+            $this->homeDir = $home;
+            $this->version = $version;
             $this->cfg = $cfg;
             $this->file = $file;
         }
@@ -76,9 +97,6 @@ namespace TheSeer\phpDox {
          */
         public function isSilentMode() {
             $root = $this->cfg->queryOne('/cfg:phpdox');
-            if (!$root instanceOf \DomNode) {
-                return false;
-            }
             return $root->getAttribute('silent', 'false') === 'true';
         }
 
@@ -96,27 +114,12 @@ namespace TheSeer\phpDox {
         /**
          * @return array
          */
-        public function getAvailableProjects() {
+        public function getProjects() {
             $list = array();
             foreach ($this->cfg->query('//cfg:project[@enabled="true" or not(@enabled)]') as $pos => $project) {
-                $list[] = $project->getAttribute('name') ?: $pos;
+                $list[$project->getAttribute('name', $pos)] = new ProjectConfig($this->version, $this->homeDir, $this->runResolver($project));
             }
             return $list;
-        }
-
-        /**
-         * @param $project
-         *
-         * @return ProjectConfig
-         * @throws ConfigException
-         */
-        public function getProjectConfig($project) {
-            $filter = is_int($project) ? $project : "@name = '$project'";
-            $ctx = $this->cfg->queryOne("//cfg:project[$filter]");
-            if (!$ctx) {
-                throw new ConfigException("Project '$project' not found in configuration xml file", ConfigException::ProjectNotFound);
-            }
-            return new ProjectConfig($this->runResolver($ctx));
         }
 
         /**
@@ -125,21 +128,13 @@ namespace TheSeer\phpDox {
          * @return mixed
          * @throws ConfigException
          */
-        protected function runResolver($ctx) {
-            if (defined('PHPDOX_VERSION') && constant('PHPDOX_VERSION')=='%development%') {
-                $home = realpath(__DIR__.'/../../');
-            } else if (defined('PHPDOX_PHAR')) {
-                $home = 'phar://' . constant('PHPDOX_PHAR');
-            } else {
-                $home = realpath(__DIR__.'/../');
-            }
-
+        private function runResolver($ctx) {
             $vars = array(
                 'basedir' => $ctx->getAttribute('basedir', dirname($this->file->getRealPath())),
 
-                'phpDox.home' => $home,
+                'phpDox.home' => $this->homeDir->getPathname(),
                 'phpDox.file' => $this->file->getPathname(),
-                'phpDox.version' => Version::getVersion(),
+                'phpDox.version' => $this->version->getVersion(),
 
                 'phpDox.project.name' => $ctx->getAttribute('name', 'unnamed'),
                 'phpDox.project.source' => $ctx->getAttribute('source', 'src'),
@@ -162,7 +157,6 @@ namespace TheSeer\phpDox {
                     throw new ConfigException("Cannot overwrite existing property '$name' in line $line", ConfigException::OverrideNotAllowed);
                 }
                 $vars[$name] =  $this->resolveValue($property->getAttribute('value'), $vars, $line);
-
             }
 
             foreach($ctx->query('.//*[not(name()="property")]/@*|@*') as $attr) {
@@ -173,17 +167,17 @@ namespace TheSeer\phpDox {
         }
 
         /**
-         * @param       $value
-         * @param array $vars
-         * @param       $line
+         * @param string   $value
+         * @param string[] $vars
+         * @param int      $line
          *
-         * @return mixed
+         * @return string
          */
-        protected function resolveValue($value, Array $vars, $line) {
+        private function resolveValue($value, Array $vars, $line) {
             $result = preg_replace_callback('/\${(.*?)}/',
                 function($matches) use ($vars, $line) {
                     if (!isset($vars[$matches[1]])) {
-                        throw new ConfigException("No value for property '{$matches[1]} found in line $line", ConfigException::PropertyNotFound);
+                        throw new ConfigException("No value for property '{$matches[1]}' found in line $line", ConfigException::PropertyNotFound);
                     }
                     return $vars[$matches[1]];
                 }, $value);
@@ -195,13 +189,4 @@ namespace TheSeer\phpDox {
 
     }
 
-    class ConfigException extends \Exception {
-
-        const ProjectNotFound = 1;
-        const NoCollectorSection = 2;
-        const NoGeneratorSection = 3;
-        const OverrideNotAllowed = 4;
-        const PropertyNotFound = 5;
-
-    }
 }

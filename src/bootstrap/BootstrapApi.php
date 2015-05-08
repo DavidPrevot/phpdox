@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010-2014 Arne Blankerts <arne@blankerts.de>
+ * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -106,7 +106,7 @@ namespace TheSeer\phpDox {
          *
          * @param FactoryInterface $factory
          */
-        public function __construct(BackendFactory $bf, DocBlockFactory $df, EnricherFactory $erf, EngineFactory $enf, ProgressLogger $logger) {
+        public function __construct(BackendFactory $bf, DocBlockFactory $df, EnricherFactory $erf, EngineFactory $enf, SilentProgressLogger $logger) {
             $this->backendFactory = $bf;
             $this->engineFactory = $enf;
             $this->parserFactory = $df;

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010-2014 Arne Blankerts <arne@blankerts.de>
+ * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -48,8 +48,15 @@ namespace TheSeer\phpDox {
      */
     class EnrichConfig {
 
-        protected $ctx;
-        protected $generator;
+        /**
+         * @var fDOMElement
+         */
+        private $ctx;
+
+        /**
+         * @var GeneratorConfig
+         */
+        private $generator;
 
         public function __construct(GeneratorConfig $generator, fDOMElement $ctx) {
             $this->generator = $generator;
@@ -70,6 +77,10 @@ namespace TheSeer\phpDox {
 
         public function getType() {
             return $this->ctx->getAttribute('type');
+        }
+
+        public function getVersion() {
+            return $this->getGeneratorConfig()->getProjectConfig()->getVersion();
         }
 
     }

@@ -1,6 +1,6 @@
 <?php
     /**
-     * Copyright (c) 2010-2014 Arne Blankerts <arne@blankerts.de>
+     * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
      * All rights reserved.
      *
      * Redistribution and use in source and binary forms, with or without modification,
@@ -36,11 +36,13 @@
      */
 namespace TheSeer\phpDox\Collector\Backend {
 
+    use TheSeer\phpDox\Collector\AbstractUnitObject;
     use TheSeer\phpDox\Collector\AbstractVariableObject;
     use TheSeer\phpDox\Collector\InlineComment;
     use TheSeer\phpDox\Collector\MethodObject;
     use TheSeer\phpDox\DocBlock\Parser as DocBlockParser;
     use PhpParser\NodeVisitorAbstract;
+    use PhpParser\Node\Stmt as NodeType;
 
     /**
      *
@@ -50,7 +52,7 @@ namespace TheSeer\phpDox\Collector\Backend {
         /**
          * @var \TheSeer\phpDox\DocBlock\Parser
          */
-        private $dockblocParser;
+        private $docBlockParser;
 
         /**
          * @var array
@@ -68,16 +70,22 @@ namespace TheSeer\phpDox\Collector\Backend {
         private $result;
 
         /**
-         * @var
+         * @var AbstractUnitObject
          */
         private $unit;
+
+        private $modifier = array(
+            NodeType\Class_::MODIFIER_PUBLIC    => 'public',
+            NodeType\Class_::MODIFIER_PROTECTED => 'protected',
+            NodeType\Class_::MODIFIER_PRIVATE   => 'private',
+        );
 
         /**
          * @param \TheSeer\phpDox\DocBlock\Parser $parser
          * @param ParseResult                     $result
          */
         public function __construct(DocBlockParser $parser, ParseResult $result) {
-            $this->dockblocParser = $parser;
+            $this->docBlockParser = $parser;
             $this->result = $result;
         }
 
@@ -85,33 +93,36 @@ namespace TheSeer\phpDox\Collector\Backend {
          * @param \PhpParser\Node $node
          */
         public function enterNode(\PhpParser\Node $node) {
-            if ($node instanceof \PhpParser\Node\Stmt\Namespace_ && $node->name != NULL) {
+            if ($node instanceof NodeType\Namespace_ && $node->name != NULL) {
                 $this->namespace = join('\\', $node->name->parts);
                 $this->aliasMap['::context'] = $this->namespace;
-            } else if ($node instanceof \PhpParser\Node\Stmt\UseUse) {
+            } else if ($node instanceof NodeType\UseUse) {
                 $this->aliasMap[$node->alias] = join('\\', $node->name->parts);
-            } else if ($node instanceof \PhpParser\Node\Stmt\Class_) {
+            } else if ($node instanceof NodeType\Class_) {
+                $this->aliasMap['::unit'] = (string)$node->namespacedName;
                 $this->unit = $this->result->addClass((string)$node->namespacedName);
                 $this->processUnit($node);
                 return;
-            } else if ($node instanceof \PhpParser\Node\Stmt\Interface_) {
+            } else if ($node instanceof NodeType\Interface_) {
+                $this->aliasMap['::unit'] = (string)$node->namespacedName;
                 $this->unit = $this->result->addInterface((string)$node->namespacedName);
                 $this->processUnit($node);
                 return;
-            } else if ($node instanceof \PhpParser\Node\Stmt\Trait_) {
+            } else if ($node instanceof NodeType\Trait_) {
+                $this->aliasMap['::unit'] = (string)$node->namespacedName;
                 $this->unit = $this->result->addTrait((string)$node->namespacedName);
                 $this->processUnit($node);
                 return;
-            } else if ($node instanceof \PhpParser\Node\Stmt\Property) {
+            } else if ($node instanceof NodeType\Property) {
                 $this->processProperty($node);
                 return;
-            } else if ($node instanceof \PhpParser\Node\Stmt\ClassMethod) {
+            } else if ($node instanceof NodeType\ClassMethod) {
                 $this->processMethod($node);
                 return;
-            } elseif ($node instanceof \PhpParser\Node\Stmt\ClassConst) {
+            } elseif ($node instanceof NodeType\ClassConst) {
                 $this->processClassConstant($node);
-            } elseif ($node instanceof \PhpParser\Comment) {
-                //
+            } elseif ($node instanceof NodeType\TraitUse) {
+                $this->processTraitUse($node);
             }
         }
 
@@ -119,9 +130,9 @@ namespace TheSeer\phpDox\Collector\Backend {
          * @param \PhpParser\Node $node
          */
         public function leaveNode(\PhpParser\Node $node) {
-            if ($node instanceof \PhpParser\Node\Stmt\Class_
-                || $node instanceof \PhpParser\Node\Stmt\Interface_
-                || $node instanceof \PhpParser\Node\Stmt\Trait_) {
+            if ($node instanceof NodeType\Class_
+                || $node instanceof NodeType\Interface_
+                || $node instanceof NodeType\Trait_) {
                 $this->unit = NULL;
                 return;
             }
@@ -133,7 +144,7 @@ namespace TheSeer\phpDox\Collector\Backend {
         private function processUnit($node) {
             $this->unit->setStartLine($node->getAttribute('startLine'));
             $this->unit->setEndLine($node->getAttribute('endLine'));
-            if ($node instanceof \PhpParser\Node\Stmt\Class_) {
+            if ($node instanceof NodeType\Class_) {
                 $this->unit->setAbstract($node->isAbstract());
                 $this->unit->setFinal($node->isFinal());
             } else {
@@ -143,12 +154,11 @@ namespace TheSeer\phpDox\Collector\Backend {
 
             $docComment = $node->getDocComment();
             if ($docComment !== NULL) {
-                $block = $this->dockblocParser->parse($docComment, $this->aliasMap);
+                $block = $this->docBlockParser->parse($docComment, $this->aliasMap);
                 $this->unit->setDocBlock($block);
             }
 
-            /** @var \PhpParser\Node\Stmt\Class_ $node */
-            if (count($node->extends) > 0) {
+            if ($node->getType() != 'Stmt_Trait' && $node->extends != NULL) {
                 if (is_array($node->extends)) {
                     foreach($node->extends as $extends) {
                         $this->unit->addExtends(join('\\', $extends->parts));
@@ -159,17 +169,55 @@ namespace TheSeer\phpDox\Collector\Backend {
 
             }
 
-            if (count($node->implements) > 0) {
+            if ($node->getType() == 'Stmt_Class') {
                 foreach($node->implements as $implements) {
                     $this->unit->addImplements(join('\\', $implements->parts));
                 }
             }
         }
 
+        private function processTraitUse(NodeType\TraitUse $node) {
+            foreach($node->traits as $trait) {
+                $traitUse = $this->unit->addTrait( (string)$trait );
+                $traitUse->setStartLine($node->getAttribute('startLine'));
+                $traitUse->setEndLine($node->getAttribute('endLine'));
+            }
+
+            foreach($node->adaptations as $adaptation) {
+                if ($adaptation instanceof NodeType\TraitUseAdaptation\Alias) {
+                    $traitUse = $this->getTraitUse((string)$adaptation->trait);
+                    $traitUse->addAlias(
+                        $adaptation->method,
+                        $adaptation->newName,
+                        $adaptation->newModifier ? $this->modifier[$adaptation->newModifier] : NULL
+                    );
+                } elseif ($adaptation instanceof NodeType\TraitUseAdaptation\Precedence) {
+                    $traitUse = $this->getTraitUse((string)$adaptation->insteadof[0]);
+                    $traitUse->addExclude($adaptation->method);
+                } else {
+                    throw new ParseErrorException(
+                        sprintf('Unexpected adaption type %s', get_class($adaptation)),
+                        ParseErrorException::UnexpectedExpr
+                    );
+                }
+            }
+
+        }
+
+        private function getTraitUse($traitName) {
+            if (!$this->unit->usesTtrait($traitName)) {
+                throw new ParseErrorException(
+                    sprintf('Referenced trait "%s" not used', $traitName),
+                    ParseErrorException::GeneralParseError
+                );
+            }
+            return $this->unit->getTraitUse($traitName);
+        }
+
         /**
-         * @param \PhpParser\Node\Stmt\ClassMethod $node
+         * @param NodeType\ClassMethod $node
          */
-        private function processMethod(\PhpParser\Node\Stmt\ClassMethod $node) {
+        private function processMethod(NodeType\ClassMethod $node) {
 
             /** @var $method \TheSeer\phpDox\Collector\MethodObject */
             $method = $this->unit->addMethod($node->name);
@@ -186,12 +234,15 @@ namespace TheSeer\phpDox\Collector\Backend {
                 $visibility = 'protected';
             }
             $method->setVisibility($visibility);
+
             $docComment = $node->getDocComment();
             if ($docComment !== NULL) {
-                $block = $this->dockblocParser->parse($docComment, $this->aliasMap);
+                $block = $this->docBlockParser->parse($docComment, $this->aliasMap);
                 $method->setDocBlock($block);
             }
+
             $this->processMethodParams($method, $node->params);
+
             if ($node->stmts) {
                 $this->processInlineComments($method, $node->stmts);
             }
@@ -206,9 +257,6 @@ namespace TheSeer\phpDox\Collector\Backend {
                             $method->addInlineComment($inline);
                         }
                     }
-                }
-                if ($stmt->stmts) {
-                    $this->processInlineComments($method, $stmt->stmts);
                 }
             }
         }
@@ -225,25 +273,33 @@ namespace TheSeer\phpDox\Collector\Backend {
                 $this->setVariableType($parameter, $param->type);
                 $this->setVariableDefaultValue($parameter, $param->default);
             }
-            //die();
         }
 
-        private function processClassConstant(\PhpParser\Node\Stmt\ClassConst $node) {
+        private function processClassConstant(NodeType\ClassConst $node) {
             $constNode = $node->consts[0];
             $const = $this->unit->addConstant($constNode->name);
-            $const->setValue($constNode->getAttribute('originalValue'));
+
+            $resolved = $this->resolveExpressionValue($constNode->value);
+
+            $const->setType($resolved['type']);
+            $const->setValue($resolved['value']);
+            if (isset($resolved['constant'])) {
+                $const->setConstantReference($resolved['constant']);
+            }
+
             $docComment = $node->getDocComment();
             if ($docComment !== NULL) {
-                $block = $this->dockblocParser->parse($docComment, $this->aliasMap);
+                $block = $this->docBlockParser->parse($docComment, $this->aliasMap);
                 $const->setDocBlock($block);
             }
         }
 
-        private function processProperty(\PhpParser\Node\Stmt\Property $node) {
+        private function processProperty(NodeType\Property $node) {
             $property = $node->props[0];
             $member = $this->unit->addMember($property->name);
-            $this->setVariableType($member, $property->type);
-            $this->setVariableDefaultValue($member, $property->default);
+            if ($node->props[0]->default) {
+                $this->setVariableDefaultValue($member, $node->props[0]->default);
+            }
             $visibility = 'public';
             if ($node->isPrivate()) {
                 $visibility = 'private';
@@ -253,7 +309,7 @@ namespace TheSeer\phpDox\Collector\Backend {
             $member->setVisibility($visibility);
             $docComment = $node->getDocComment();
             if ($docComment !== NULL) {
-                $block = $this->dockblocParser->parse($docComment, $this->aliasMap);
+                $block = $this->docBlockParser->parse($docComment, $this->aliasMap);
                 $member->setDocBlock($block);
             }
             $member->setLine($node->getLine());
@@ -281,6 +337,83 @@ namespace TheSeer\phpDox\Collector\Backend {
             $variable->setType($type);
         }
 
+        private function resolveExpressionValue(\PhpParser\Node\Expr $expr) {
+            if ($expr instanceof \PhpParser\Node\Scalar\String_) {
+                return array(
+                    'type' => 'string',
+                    'value' => $expr->getAttribute('originalValue')
+                );
+            }
+
+            if ($expr instanceof \PhpParser\Node\Scalar\LNumber ||
+                $expr instanceof \PhpParser\Node\Expr\UnaryMinus ||
+                $expr instanceof \PhpParser\Node\Expr\UnaryPlus) {
+                return array(
+                    'type' => 'integer',
+                    'value' => $expr->getAttribute('originalValue')
+                );
+            }
+
+            if ($expr instanceof \PhpParser\Node\Scalar\DNumber) {
+                return array(
+                    'type' => 'float',
+                    'value' => $expr->getAttribute('originalValue')
+                );
+            }
+
+            if ($expr instanceof \PhpParser\Node\Expr\Array_) {
+                return array(
+                    'type' => 'array',
+                    'value' => '' // @todo add array2xml?
+                );
+            }
+
+            if ($expr instanceof \PhpParser\Node\Expr\ClassConstFetch) {
+                return array(
+                    'type' => '{unknown}',
+                    'value' => '',
+                    'constant' => join('\\', $expr->class->parts) . '::' . $expr->name
+                );
+            }
+
+            if ($expr instanceof \PhpParser\Node\Expr\ConstFetch) {
+                $reference = join('\\', $expr->name->parts);
+                if (in_array(strtolower($reference), array('true', 'false'))) {
+                    return array(
+                        'type' => 'boolean',
+                        'value' => $reference
+                    );
+                }
+                return array(
+                    'type' => '{unknown}',
+                    'value' => '',
+                    'constant' => join('\\', $expr->name->parts)
+                );
+            }
+
+            if ($expr instanceof \PhpParser\Node\Scalar\MagicConst\Line) {
+                return array(
+                    'type' => 'integer',
+                    'value' => '',
+                    'constant' => $expr->getName()
+                );
+            }
+
+            if ($expr instanceof \PhpParser\Node\Scalar\MagicConst) {
+                return array(
+                    'type' => 'string',
+                    'value' => '',
+                    'constant' => $expr->getName()
+                );
+            }
+
+            $type = get_class($expr);
+            $line = $expr->getLine();
+            $file = $this->result->getFileName();
+            throw new ParseErrorException("Unexpected expression type '$type' for value in line $line of file '$file'", ParseErrorException::UnexpectedExpr);
+
+        }
+
         /**
          * @param AbstractVariableObject     $variable
          * @param \PhpParser\Node\Expr       $default
@@ -290,78 +423,12 @@ namespace TheSeer\phpDox\Collector\Backend {
             if ($default === NULL) {
                 return;
             }
-            if ($default instanceof \PhpParser\Node\Scalar\String) {
-                $variable->setDefault($default->getAttribute('originalValue'));
-                if ($variable->getType() == '{unknown}') {
-                    $variable->setType('string');
-                }
-                return;
+            $resolved = $this->resolveExpressionValue($default);
+            $variable->setType($resolved['type']);
+            $variable->setDefault($resolved['value']);
+            if (isset($resolved['constant'])) {
+                $variable->setConstant($resolved['constant']);
             }
-            if ($default instanceof \PhpParser\Node\Scalar\LNumber ||
-                $default instanceof \PhpParser\Node\Expr\UnaryMinus ||
-                $default instanceof \PhpParser\Node\Expr\UnaryPlus) {
-                $variable->setDefault($default->getAttribute('originalValue'));
-                if ($variable->getType() == '{unknown}') {
-                    $variable->setType('integer');
-                }
-                return;
-            }
-            if ($default instanceof \PhpParser\Node\Scalar\DNumber) {
-                $variable->setDefault($default->getAttribute('originalValue'));
-                if ($variable->getType() == '{unknown}') {
-                    $variable->setType('float');
-                }
-                return;
-            }
-            if ($default instanceof \PhpParser\Node\Expr\Array_) {
-                //var_dump($default);
-                //$parameter->setDefault(join('\\', $default->items));
-                if ($variable->getType() == '{unknown}') {
-                    $variable->setType('array');
-                }
-                return;
-            }
-            if ($default instanceof \PhpParser\Node\Expr\ClassConstFetch) {
-                $variable->setDefault(join('\\', $default->class->parts) . '::' . $default->name);
-                return;
-            }
-            if ($default instanceof \PhpParser\Node\Expr\ConstFetch) {
-                $variable->setDefault(join('\\', $default->name->parts));
-                return;
-            }
-            if ($default instanceof \PhpParser\Node\Scalar\MagicConst\Trait_) {
-                $variable->setName('__TRAIT__');
-                return;
-            }
-            if ($default instanceof \PhpParser\Node\Scalar\MagicConst\Class_) {
-                $variable->setDefault('__CLASS__');
-                return;
-            }
-            if ($default instanceof \PhpParser\Node\Scalar\MagicConst\Method) {
-                $variable->setName('__METHOD__');
-                return;
-            }
-            if ($default instanceof \PhpParser\Node\Scalar\MagicConst\Dir) {
-                $variable->setName('__DIR__');
-                return;
-            }
-            if ($default instanceof \PhpParser\Node\Scalar\MagicConst\File) {
-                $variable->setName('__FILE__');
-                return;
-            }
-            if ($default instanceof \PhpParser\Node\Scalar\MagicConst\Function_) {
-                $variable->setName('__FUNC__');
-                return;
-            }
-            if ($default instanceof \PhpParser\Node\Scalar\MagicConst\Line) {
-                $variable->setName('__LINE__');
-                return;
-            }
-
-            $type = get_class($default);
-            $line = $default->startLine;
-            $file = $this->result->getFileName();
-            throw new ParseErrorException("Unexpected expression type '$type' for default value in line $line of file '$file'", ParseErrorException::UnexpectedExpr);
         }
 
     }
