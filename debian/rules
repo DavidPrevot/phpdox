@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 %:
-	dh $@ --with phpcomposer
+	dh $@ --with phpcomposer -Xvendor.php
 
 override_dh_auto_build:
 
