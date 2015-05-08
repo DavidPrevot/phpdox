@@ -1,6 +1,0 @@
-#! /bin/sh
-patch -p1 < debian/patches/DEP-8/Use-installed-class-for-DEP-8-tests.patch
-phpunit
-exit=$?
-patch -Rp1 < debian/patches/DEP-8/Use-installed-class-for-DEP-8-tests.patch
-exit $exit
