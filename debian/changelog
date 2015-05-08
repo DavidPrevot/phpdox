@@ -1,3 +1,21 @@
+phpdox (0.8.0-1) unstable; urgency=medium
+
+  [ Arne Blankerts ]
+  * Reorganisation:
+    - Removed bundled dependencies in favor of composer resolved dependencies
+    - renamed phpdox.php to phpdox (without extension)
+  * Release 0.8.0
+
+  [ David Prévot ]
+  * Update copyright
+  * Update patches for new version
+  * Use patched autoload.php for tests
+  * Simplify rules for renamed phpdox
+  * Upstream now provides a proper changelog
+  * Build-depend on php-parser
+
+ -- David Prévot <taffit@debian.org>  Fri, 08 May 2015 11:36:17 -0400
+
 phpdox (0.7.0-2) unstable; urgency=medium
 
   * Install actually needed bootstrap
