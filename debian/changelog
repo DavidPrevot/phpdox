@@ -1,3 +1,14 @@
+phpdox (0.8.1-1) unstable; urgency=medium
+
+  [ Arne Blankerts ]
+  * Fix #225 by requiring fDOMDocument 1.6.1 which includes a fix for
+    the underlying issue
+  * Update PHPParser to 1.3.0
+  * Update for php-timer 1.0.6 - fixes issue #235
+  * prepare 0.8.1 release
+
+ -- David Prévot <taffit@debian.org>  Thu, 02 Jul 2015 10:42:44 -0400
+
 phpdox (0.8.0-1) unstable; urgency=medium
 
   [ Arne Blankerts ]
