@@ -1,4 +1,4 @@
 0001-Load-dependencies-from-autoload.php.patch
 0002-Adapt-to-actual-autoload.php.patch
 0003-Adpapt-to-actual-templates-path.patch
-0004-Revert-Hardwire-PHPParser-1.2.2.patch
+0004-Don-t-Hardwire-PHPParser.patch

@@ -8,7 +8,7 @@ Forwarded: not-needed
  1 file changed, 2 insertions(+), 19 deletions(-)
 
 diff --git a/phpdox b/phpdox
-index bc2d061..581c0fc 100755
+index c8e27b0..1e2eefd 100755
 --- a/phpdox
 +++ b/phpdox
 @@ -1,4 +1,4 @@
@@ -24,8 +24,8 @@ index bc2d061..581c0fc 100755
 -require __DIR__ . '/src/autoload.php';
 -
 -$found = false;
--foreach(array(__DIR__ . '/vendor', __DIR__ . '/../../../vendor') as $vendor) {
--    if (file_exists($vendor)) {
+-foreach(array(__DIR__ . '/vendor', __DIR__ . '/../..') as $vendor) {
+-    if (file_exists($vendor . '/autoload.php')) {
 -        $found = true;
 -        require __DIR__ . '/src/vendor.php';
 -    }
@@ -37,7 +37,7 @@ index bc2d061..581c0fc 100755
 -        'wget http://getcomposer.org/composer.phar' . PHP_EOL .
 -        'php composer.phar install' . PHP_EOL
 -    );
--    die(1);
+-    exit(1);
 -}
 +require 'TheSeer/phpDox/autoload.php';
  
