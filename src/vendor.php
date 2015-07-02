@@ -7,7 +7,7 @@ spl_autoload_register(
         static $classes = null;
         if ($classes === null) {
             $classes = array(
-                'php_timer' => '/phpunit/php-timer/PHP/Timer.php',
+                'php_timer' => '/phpunit/php-timer/src/Timer.php',
                 'phpparser\\autoloader' => '/nikic/php-parser/lib/PhpParser/Autoloader.php',
                 'phpparser\\builder' => '/nikic/php-parser/lib/PhpParser/Builder.php',
                 'phpparser\\builder\\class_' => '/nikic/php-parser/lib/PhpParser/Builder/Class_.php',
@@ -118,6 +118,7 @@ spl_autoload_register(
                 'phpparser\\node\\expr\\unaryplus' => '/nikic/php-parser/lib/PhpParser/Node/Expr/UnaryPlus.php',
                 'phpparser\\node\\expr\\variable' => '/nikic/php-parser/lib/PhpParser/Node/Expr/Variable.php',
                 'phpparser\\node\\expr\\yield_' => '/nikic/php-parser/lib/PhpParser/Node/Expr/Yield_.php',
+                'phpparser\\node\\expr\\yieldfrom' => '/nikic/php-parser/lib/PhpParser/Node/Expr/YieldFrom.php',
                 'phpparser\\node\\name' => '/nikic/php-parser/lib/PhpParser/Node/Name.php',
                 'phpparser\\node\\name\\fullyqualified' => '/nikic/php-parser/lib/PhpParser/Node/Name/FullyQualified.php',
                 'phpparser\\node\\name\\relative' => '/nikic/php-parser/lib/PhpParser/Node/Name/Relative.php',

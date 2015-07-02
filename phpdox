@@ -43,8 +43,8 @@
 require __DIR__ . '/src/autoload.php';
 
 $found = false;
-foreach(array(__DIR__ . '/vendor', __DIR__ . '/../../../vendor') as $vendor) {
-    if (file_exists($vendor)) {
+foreach(array(__DIR__ . '/vendor', __DIR__ . '/../..') as $vendor) {
+    if (file_exists($vendor . '/autoload.php')) {
         $found = true;
         require __DIR__ . '/src/vendor.php';
     }
@@ -56,13 +56,13 @@ if (!$found) {
         'wget http://getcomposer.org/composer.phar' . PHP_EOL .
         'php composer.phar install' . PHP_EOL
     );
-    die(1);
+    exit(1);
 }
 
 $factory = new TheSeer\phpDox\Factory(
     new \TheSeer\phpDox\FileInfo(__DIR__),
-    new \TheSeer\phpDox\Version('0.8.0-dev')
+    new \TheSeer\phpDox\Version('0.8.2-dev')
 );
-$factory->getCLI()->run(
+exit($factory->getCLI()->run(
     new TheSeer\phpDox\CLIOptions($_SERVER['argv'])
-);
+));
