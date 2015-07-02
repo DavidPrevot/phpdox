@@ -125,10 +125,9 @@ namespace TheSeer\phpDox {
             fwrite(STDERR, "PHPDox Version: " . $this->version->getVersion() . "\n");
             $this->renderException($exception);
             fwrite(STDERR, "\n\n\n");
-            exit(1);
         }
 
-        protected function renderException(\Exception $exception) {
+        private function renderException(\Exception $exception) {
             if ($exception instanceof ErrorException) {
                 fwrite(STDERR, sprintf("ErrorException: %s \n", $exception->getErrorName()));
             } else {

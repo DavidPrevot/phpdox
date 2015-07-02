@@ -47,6 +47,13 @@ namespace TheSeer\phpDox {
 
     class CLI {
 
+        const ExitOK = 0;
+        const ExitExecError = 1;
+        const ExitEnvError = 2;
+        const ExitParamError = 3;
+        const ExitConfigError = 4;
+        const ExitException = 5;
+
         /**
          * @var Environment
          */
@@ -80,34 +87,29 @@ namespace TheSeer\phpDox {
         public function run(CLIOptions $options) {
             $errorHandler = $this->factory->getErrorHandler();
             $errorHandler->register();
+
             try {
+
                 $this->environment->ensureFitness();
 
                 if ($options->showHelp() === TRUE) {
                     $this->showVersion();
                     echo $options->getHelpScreen();
-                    exit(0);
+                    return self::ExitOK;
                 }
 
                 if ($options->showVersion() === TRUE) {
                     $this->showVersion();
-                    exit(0);
+                    return self::ExitOK;
                 }
 
                 if ($options->generateSkel() === TRUE) {
                     $this->showSkeletonConfig($options->generateStrippedSkel());
-                    exit(0);
+                    return self::ExitOK;
                 }
 
-                $cfgLoader = $this->factory->getConfigLoader();
-                $cfgFile = $options->configFile();
-                if ($cfgFile != '') {
-                    $config = $cfgLoader->load($cfgFile);
-                } else {
-                    $config = $cfgLoader->autodetect();
-                }
+                $config = $this->loadConfig($options);
 
-                /** @var $config GlobalConfig */
                 if ($config->isSilentMode()) {
                     $this->factory->activateSilentMode();
                 } else {
@@ -117,7 +119,6 @@ namespace TheSeer\phpDox {
                 $logger = $this->factory->getLogger();
                 $logger->log("Using config file '". $config->getConfigFile()->getPathname() . "'");
 
-                /** @var Application $app */
                 $app = $this->factory->getApplication();
 
                 $defBootstrapFiles = new FileInfoCollection();
@@ -144,12 +145,11 @@ namespace TheSeer\phpDox {
                 }
 
                 if ($options->listBackends() || $options->listEngines() || $options->listEnrichers()) {
-                    exit(0);
+                    return self::ExitOK;
                 }
 
                 foreach($config->getProjects() as $projectName => $projectConfig) {
 
-                    /** @var ProjectConfig $projectConfig */
                     $logger->log("Starting to process project '$projectName'");
 
                     $app->runConfigChangeDetection(
@@ -170,37 +170,39 @@ namespace TheSeer\phpDox {
                 }
 
                 $logger->buildSummary();
+                return self::ExitOK;
 
             } catch (EnvironmentException $e) {
                 $this->showVersion();
                 fwrite(STDERR, 'Sorry, but your PHP environment is currently not able to run phpDox due to');
                 fwrite(STDERR, "\nthe following issue(s):\n\n" . $e->getMessage() . "\n\n");
                 fwrite(STDERR, "Please adjust your PHP configuration and try again.\n\n");
-                exit(3);
+                return self::ExitEnvError;
             } catch (CLIOptionsException $e) {
                 $this->showVersion();
                 fwrite(STDERR, $e->getMessage()."\n\n");
                 fwrite(STDERR, $options->getHelpScreen());
-                exit(3);
+                return self::ExitParamError;
             } catch (ConfigLoaderException $e) {
                 $this->showVersion();
                 fwrite(STDERR, "\nAn error occured while trying to load the configuration file:\n\n" . $e->getMessage(). "\n\n");
                 if ($e->getCode() == ConfigLoaderException::NeitherCandidateExists) {
                     fwrite(STDERR, "Using --skel might get you started.\n\n");
                 }
-                exit(3);
+                return self::ExitConfigError;
             } catch (ConfigException $e) {
                 fwrite(STDERR, "\nYour configuration seems to be corrupted:\n\n\t" . $e->getMessage()."\n\nPlease verify your configuration xml file.\n\n");
-                exit(3);
+                return self::ExitConfigError;
             } catch (ApplicationException $e) {
                 fwrite(STDERR, "\nAn application error occured while processing:\n\n\t" . $e->getMessage()."\n\nPlease verify your configuration.\n\n");
-                exit(1);
+                return self::ExitExecError;
             } catch (\Exception $e) {
                 if ($e instanceof fDOMException) {
                     $e->toggleFullMessage(TRUE);
                 }
                 $this->showVersion();
                 $errorHandler->handleException($e);
+                return self::ExitException;
             }
         }
 
@@ -227,6 +229,21 @@ namespace TheSeer\phpDox {
                 printf("   %s \t %s\n", $name, $desc);
             }
             echo "\n\n";
+        }
+
+        /**
+         * @param CLIOptions $options
+         *
+         * @return GlobalConfig
+         * @throws ConfigLoaderException
+         */
+        private function loadConfig(CLIOptions $options) {
+            $cfgLoader = $this->factory->getConfigLoader();
+            $cfgFile = $options->configFile();
+            if ($cfgFile != '') {
+                return $cfgLoader->load($cfgFile);
+            }
+            return $cfgLoader->autodetect();
         }
 
     }
