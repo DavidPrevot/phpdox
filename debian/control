@@ -13,7 +13,7 @@ Build-Depends: ant,
                php-parser,
                php-timer,
                phpunit,
-               pkg-php-tools (>= 1.7~)
+               pkg-php-tools (>= 1.29~)
 Standards-Version: 3.9.6
 Homepage: http://phpdox.de/
 Vcs-Git: git://anonscm.debian.org/pkg-php/phpdox.git
