@@ -1,3 +1,12 @@
+phpdox (0.8.1.1-2) unstable; urgency=medium
+
+  * Use caret operator since php-parser 2 has backward incompatible changes
+  * Update Standards-Version to 3.9.7
+  * Build-depend on php-mbstring for the tests
+  * Rebuild with recent pkg-php-tools for the PHP 7.0 transition
+
+ -- David Prévot <taffit@debian.org>  Wed, 16 Mar 2016 17:08:50 -0400
+
 phpdox (0.8.1.1-1) unstable; urgency=medium
 
   [ Arne Blankerts ]
