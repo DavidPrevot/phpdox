@@ -1,0 +1,22 @@
+From: =?utf-8?q?David_Pr=C3=A9vot?= <david@tilapin.org>
+Date: Thu, 17 Mar 2016 22:11:04 -0400
+Subject: Use expectException instead of deprecated setExpectedException
+
+Forwarded: https://github.com/theseer/phpdox/pull/268
+---
+ tests/Unit/config/GlobalConfigTest.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/Unit/config/GlobalConfigTest.php b/tests/Unit/config/GlobalConfigTest.php
+index f3fa720..0f7a869 100644
+--- a/tests/Unit/config/GlobalConfigTest.php
++++ b/tests/Unit/config/GlobalConfigTest.php
+@@ -239,7 +239,7 @@ namespace TheSeer\phpDox {
+          */
+         public function testInvalidPropertyRequestThrowsException($file, $code) {
+             $this->init('resolver/' .  $file);
+-            $this->setExpectedException('TheSeer\\phpDox\\ConfigException', $code);
++            $this->expectException('TheSeer\\phpDox\\ConfigException', $code);
+             $this->config->getProjects();
+         }
+ 
