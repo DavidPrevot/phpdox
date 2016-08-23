@@ -1,0 +1,22 @@
+From: Chris Lamb <lamby@debian.org>
+Date: Tue, 23 Aug 2016 13:18:13 +0100
+Subject: Make the build reproducible
+
+Bug-Debian: https://bugs.debian.org/835193
+---
+ src/shared/Version.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/shared/Version.php b/src/shared/Version.php
+index 3c7e1c8..8b7e33b 100644
+--- a/src/shared/Version.php
++++ b/src/shared/Version.php
+@@ -68,7 +68,7 @@ namespace TheSeer\phpDox {
+         }
+ 
+         public function getInfoString() {
+-            return 'phpDox ' . $this->getVersion() . " - Copyright (C) 2010 - " . date('Y') . " by Arne Blankerts and Contributors";
++            return 'phpDox ' . $this->getVersion() . " - Copyright (C) 2010 - " . date('Y', getenv('SOURCE_DATE_EPOCH') ?: time()) . " by Arne Blankerts and Contributors";
+         }
+ 
+         public function getGeneratedByString() {
