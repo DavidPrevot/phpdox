@@ -45,6 +45,7 @@ spl_autoload_register(
                 'theseer\\phpdox\\collector\\parameterobject' => '/collector/project/ParameterObject.php',
                 'theseer\\phpdox\\collector\\project' => '/collector/project/Project.php',
                 'theseer\\phpdox\\collector\\projectexception' => '/collector/project/ProjectException.php',
+                'theseer\\phpdox\\collector\\returntypeobject' => '/collector/project/ReturnTypeObject.php',
                 'theseer\\phpdox\\collector\\sourcecollection' => '/collector/project/SourceCollection.php',
                 'theseer\\phpdox\\collector\\sourcecollectionexception' => '/collector/project/SourceCollectionException.php',
                 'theseer\\phpdox\\collector\\sourcefile' => '/collector/project/SourceFile.php',
@@ -134,7 +135,7 @@ spl_autoload_register(
                 'theseer\\phpdox\\generator\\enricher\\fullenricherinterface' => '/generator/enricher/FullEnricherInterface.php',
                 'theseer\\phpdox\\generator\\enricher\\git' => '/generator/enricher/git/Git.php',
                 'theseer\\phpdox\\generator\\enricher\\gitconfig' => '/generator/enricher/git/GitConfig.php',
-                'theseer\\phpdox\\generator\\enricher\\gitenricherexception' => '/generator/enricher/git/Git.php',
+                'theseer\\phpdox\\generator\\enricher\\gitenricherexception' => '/generator/enricher/git/GitEnricherException.php',
                 'theseer\\phpdox\\generator\\enricher\\interfaceenricherinterface' => '/generator/enricher/InterfaceEnricherInterface.php',
                 'theseer\\phpdox\\generator\\enricher\\phpcs' => '/generator/enricher/phpcs/PHPCs.php',
                 'theseer\\phpdox\\generator\\enricher\\phpcsconfig' => '/generator/enricher/phpcs/PHPCsConfig.php',
@@ -223,6 +224,8 @@ spl_autoload_register(
         if (isset($classes[$cn])) {
             require __DIR__ . $classes[$cn];
         }
-    }
+    },
+    true,
+    false
 );
 // @codeCoverageIgnoreEnd

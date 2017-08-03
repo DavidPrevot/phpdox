@@ -1,8 +1,14 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:git="http://xml.phpdox.net/gitlog"
                 xmlns:pdx="http://xml.phpdox.net/src"
-                xmlns:pdxf="http://xml.phpdox.net/functions">
+                xmlns:pdxf="http://xml.phpdox.net/functions"
+                xmlns:pu="http://schema.phpunit.de/coverage/1.0"
+                xmlns:func="http://exslt.org/functions"
+                xmlns:idx="http://xml.phpdox.net/src"
+                xmlns:git="http://xml.phpdox.net/gitlog"
+                xmlns:ctx="ctx://engine/html"
+                extension-element-prefixes="func"
+                exclude-result-prefixes="idx pdx pdxf pu git ctx">
 
     <xsl:import href="functions.xsl"/>
     <xsl:import href="components.xsl" />
@@ -214,12 +220,12 @@
                     </tr>
                     <tr>
                         <td class="indent">Average Class Length</td>
-                        <td class="nummeric"><xsl:value-of select="round($phploc/pdx:llocByNoc)" /></td>
+                        <td class="nummeric"><xsl:value-of select="round($phploc/pdx:classLlocAvg)" /></td>
                         <td/>
                     </tr>
                     <tr>
                         <td class="indent">Average Method Length</td>
-                        <td class="nummeric"><xsl:value-of select="round($phploc/pdx:llocByNom)" /></td>
+                        <td class="nummeric"><xsl:value-of select="round($phploc/pdx:methodLlocAvg)" /></td>
                         <td/>
                     </tr>
                     <tr>

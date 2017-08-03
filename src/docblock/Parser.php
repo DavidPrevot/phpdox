@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
+ * Copyright (c) 2010-2017 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -95,7 +95,7 @@ namespace TheSeer\phpDox\DocBlock {
             $block = str_replace(array("\r\n", "\r"), "\n", mb_substr($block, 3, -2));
             $raw = array();
             foreach(explode("\n", $block) as $line) {
-                $line = preg_replace('/^\s*\* ?/', '', $line);
+                $line = preg_replace('/^\s*\*? ?/', '', $line);
                 $raw[] = rtrim($line, " \n\t*");
             }
             return $raw;

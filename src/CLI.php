@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
+ * Copyright (c) 2010-2017 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -200,6 +200,10 @@ namespace TheSeer\phpDox {
                 if ($e instanceof fDOMException) {
                     $e->toggleFullMessage(TRUE);
                 }
+                $this->showVersion();
+                $errorHandler->handleException($e);
+                return self::ExitException;
+            } catch (\Throwable $e) {
                 $this->showVersion();
                 $errorHandler->handleException($e);
                 return self::ExitException;

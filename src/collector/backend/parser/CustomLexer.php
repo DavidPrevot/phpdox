@@ -1,6 +1,6 @@
 <?php
     /**
-     * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
+     * Copyright (c) 2010-2017 Arne Blankerts <arne@blankerts.de>
      * All rights reserved.
      *
      * Redistribution and use in source and binary forms, with or without modification,
@@ -37,7 +37,7 @@
 namespace TheSeer\phpDox\Collector\Backend {
 
     use PhpParser\Lexer\Emulative;
-    use PhpParser\Parser;
+    use PhpParser\Parser\Tokens;
 
     /**
      * CustomLexer as suggest for workaround for issue 26 (https://github.com/nikic/PHP-Parser/issues/26)
@@ -47,9 +47,9 @@ namespace TheSeer\phpDox\Collector\Backend {
         public function getNextToken(&$value = NULL, &$startAttributes = NULL, &$endAttributes = NULL) {
             $tokenId = parent::getNextToken($value, $startAttributes, $endAttributes);
 
-            if ($tokenId == Parser::T_CONSTANT_ENCAPSED_STRING
-                || $tokenId == Parser::T_LNUMBER
-                || $tokenId == Parser::T_DNUMBER
+            if ($tokenId == Tokens::T_CONSTANT_ENCAPSED_STRING
+                || $tokenId == Tokens::T_LNUMBER
+                || $tokenId == Tokens::T_DNUMBER
             ) {
                 $endAttributes['originalValue'] = $value;
             }

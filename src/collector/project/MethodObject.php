@@ -1,6 +1,6 @@
 <?php
     /**
-     * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
+     * Copyright (c) 2010-2017 Arne Blankerts <arne@blankerts.de>
      * All rights reserved.
      *
      * Redistribution and use in source and binary forms, with or without modification,
@@ -165,6 +165,16 @@ namespace TheSeer\phpDox\Collector {
 
         }
 
+        /**
+         * @param string $name
+         *
+         * @return ReturnTypeObject
+         */
+        public function setReturnType($name) {
+            $returnType = new ReturnTypeObject($this->ctx->appendElementNS(self::XMLNS, 'return'));
+            $returnType->setType($name);
+            return $returnType;
+        }
 
         /**
          * @param string $name
