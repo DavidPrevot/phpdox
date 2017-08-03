@@ -1,6 +1,6 @@
 <?php
 /**
-     * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
+     * Copyright (c) 2010-2017 Arne Blankerts <arne@blankerts.de>
      * All rights reserved.
      *
      * Redistribution and use in source and binary forms, with or without modification,
@@ -68,7 +68,7 @@ namespace TheSeer\phpDox {
         }
 
         public function getInfoString() {
-            return 'phpDox ' . $this->getVersion() . " - Copyright (C) 2010 - " . date('Y') . " by Arne Blankerts";
+            return 'phpDox ' . $this->getVersion() . " - Copyright (C) 2010 - " . date('Y') . " by Arne Blankerts and Contributors";
         }
 
         public function getGeneratedByString() {
@@ -76,13 +76,13 @@ namespace TheSeer\phpDox {
         }
 
         private function initialize() {
-            if (!is_dir(__DIR__ . '/../../.git')) {
+            if (!is_dir(__DIR__ . '/../../.git') || strpos(ini_get('disable_functions'), 'exec') !== false) {
                 return $this->release;
             }
             $dir = getcwd();
             chdir(__DIR__);
 
-            $devNull = strtolower(substr(PHP_OS, 0, 3)) == 'win' ? 'NUL' : '/dev/null';
+            $devNull = strtolower(substr(PHP_OS, 0, 3)) == 'win' ? 'nul' : '/dev/null';
             $git = exec('command -p git describe --always --dirty 2>'.$devNull, $foo, $rc);
             chdir($dir);
             if ($rc === 0) {

@@ -19,7 +19,7 @@
   <member name="name" static="false" visibility="public">
     <default>null</default>
     <docblock>
-      <description compact="&#10;       Name of the class. Read-only, throws&#10;       ReflectionException in attempt to write.&#10;      "/>
+      <description compact="Name of the class. Read-only, throws ReflectionException in attempt to write."/>
     </docblock>
   </member>
   <constructor name="__construct" abstract="false" static="false" visibility="public" final="false">
@@ -120,7 +120,7 @@
   </method>
   <method name="getModifiers" abstract="false" static="false" visibility="public" final="false">
     <docblock>
-      <description compact="Gets modifiers"/>
+      <description compact="Gets the class modifiers"/>
       <return type="int"/>
     </docblock>
   </method>
@@ -139,7 +139,7 @@
   <method name="getParentClass" abstract="false" static="false" visibility="public" final="false">
     <docblock>
       <description compact="Gets parent class"/>
-      <return type="object"/>
+      <return type="ReflectionClass"/>
     </docblock>
   </method>
   <method name="getProperties" abstract="false" static="false" visibility="public" final="false">
@@ -237,6 +237,12 @@
   <method name="isAbstract" abstract="false" static="false" visibility="public" final="false">
     <docblock>
       <description compact="Checks if class is abstract"/>
+      <return type="bool"/>
+    </docblock>
+  </method>
+  <method name="isAnonymous" abstract="false" static="false" visibility="public" final="false">
+    <docblock>
+      <description compact="Checks if class is anonymous"/>
       <return type="bool"/>
     </docblock>
   </method>

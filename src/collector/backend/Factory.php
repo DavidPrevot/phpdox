@@ -1,6 +1,6 @@
 <?php
     /**
-     * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
+     * Copyright (c) 2010-2017 Arne Blankerts <arne@blankerts.de>
      * All rights reserved.
      *
      * Redistribution and use in source and binary forms, with or without modification,
@@ -50,7 +50,10 @@ namespace TheSeer\phpDox\Collector\Backend {
         public function getInstanceFor($type) {
             switch ($type) {
                 case 'parser': {
-                    return new PHPParser($this->master->getDocblockParser());
+                    return new PHPParser(
+                        $this->master->getDocblockParser(),
+                        $this->master->getErrorHandler()
+                    );
                 }
                 default: {
                     throw new FactoryException("'$type' is not a known backend.");

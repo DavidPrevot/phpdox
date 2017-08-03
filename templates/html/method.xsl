@@ -3,7 +3,12 @@
                 xmlns:pdx="http://xml.phpdox.net/src"
                 xmlns:pdxf="http://xml.phpdox.net/functions"
                 xmlns:pu="http://schema.phpunit.de/coverage/1.0"
-                exclude-result-prefixes="pdx pdxf">
+                xmlns:func="http://exslt.org/functions"
+                xmlns:idx="http://xml.phpdox.net/src"
+                xmlns:git="http://xml.phpdox.net/gitlog"
+                xmlns:ctx="ctx://engine/html"
+                extension-element-prefixes="func"
+                exclude-result-prefixes="idx pdx pdxf pu git ctx">
 
     <xsl:import href="components.xsl" />
     <xsl:import href="functions.xsl" />
@@ -21,7 +26,7 @@
     <xsl:template match="/">
         <html lang="en">
             <xsl:call-template name="head">
-                <xsl:with-param name="title" select="'Test Method'" />
+                <xsl:with-param name="title" select="concat($unit/@full, '::', $methodName)" />
             </xsl:call-template>
             <body>
                 <xsl:call-template name="nav" />

@@ -1,6 +1,6 @@
 <?php
     /**
-     * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
+     * Copyright (c) 2010-2017 Arne Blankerts <arne@blankerts.de>
      * All rights reserved.
      *
      * Redistribution and use in source and binary forms, with or without modification,
@@ -159,6 +159,11 @@ EOF;
             $argName = '';
             foreach($argv as $arg) {
                 if ($arg[0] == '-') {
+                    if (strlen($arg) == 1) {
+                        throw new CLIOptionsException(
+                            sprintf('Syntax error while parsing option (unnamed switch or option)')
+                        );
+                    }
                     if ($arg[1] == '-') {
                         $argName = mb_substr($arg, 2);
                         if (!in_array($argName, $options)) {
@@ -190,7 +195,7 @@ EOF;
                 }
                 if (!$valueExcepted) {
                     throw new CLIOptionsException(
-                        sprintf('Value for option "%s" provided but none exepected', $argName)
+                        sprintf('Value for option "%s" provided but none expected', $argName)
                     );
                 }
                 $this->parsed[$argName] = $arg;

@@ -1,6 +1,6 @@
 <?php
     /**
-     * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
+     * Copyright (c) 2010-2017 Arne Blankerts <arne@blankerts.de>
      * All rights reserved.
      *
      * Redistribution and use in source and binary forms, with or without modification,
@@ -55,7 +55,7 @@ namespace TheSeer\phpDox\Collector {
         /**
          * @var array
          */
-        private $types = array('{unknown}', 'object', 'array','integer','float','string','boolean','resource');
+        private $types = array('{unknown}', 'object', 'array', 'int', 'integer','float','string','bool','boolean','resource','callable');
 
         /**
          * @param fDOMElement $ctx
@@ -110,11 +110,15 @@ namespace TheSeer\phpDox\Collector {
             $this->ctx->setAttribute('constant', $const);
         }
 
+        public function isInternalType($type) {
+            return in_array(mb_strtolower($type), $this->types);
+        }
+
         /**
          * @param $type
          */
         public function setType($type) {
-            if (!in_array(mb_strtolower($type), $this->types)) {
+            if (!$this->isInternalType($type)) {
                 $parts = explode('\\', $type);
                 $local = array_pop($parts);
                 $namespace = join('\\', $parts);
@@ -135,5 +139,12 @@ namespace TheSeer\phpDox\Collector {
             return $this->ctx->getAttribute('type');
         }
 
+        public function setNullable($isNullable) {
+            $this->ctx->setAttribute('nullable', $isNullable ? 'true' : 'false');
+        }
+
+        protected function addInternalType($type) {
+            $this->types[] = $type;
+        }
     }
 }

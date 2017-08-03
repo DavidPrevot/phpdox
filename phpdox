@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
-/**
- * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
+/*
+ * Copyright (c) 2010-2017 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,28 +40,40 @@
  *
  */
 
+if (!defined('HHVM_VERSION') && (version_compare(phpversion(), '5.5', 'lt'))) {
+    fwrite(
+        STDERR,
+        sprintf(
+            "phpDox requires PHP 5.5 or later; " .
+            "Upgrading to the latest version of PHP is highly recommended. (Version used: %s)\n\n",
+            phpversion()
+        )
+    );
+
+    die(1);
+}
+
 require __DIR__ . '/src/autoload.php';
 
 $found = false;
 foreach(array(__DIR__ . '/vendor', __DIR__ . '/../..') as $vendor) {
     if (file_exists($vendor . '/autoload.php')) {
         $found = true;
-        require __DIR__ . '/src/vendor.php';
+        require $vendor . '/autoload.php';
+        break;
     }
 }
 
 if (!$found) {
     fwrite(STDERR,
-        'You need to set up the project dependencies using the following commands:' . PHP_EOL .
-        'wget http://getcomposer.org/composer.phar' . PHP_EOL .
-        'php composer.phar install' . PHP_EOL
+        "The vendor directory was not found at the expected locations.\nDid you run composer install?\n\n"
     );
     exit(1);
 }
 
 $factory = new TheSeer\phpDox\Factory(
     new \TheSeer\phpDox\FileInfo(__DIR__),
-    new \TheSeer\phpDox\Version('0.8.2-dev')
+    new \TheSeer\phpDox\Version('0.11.0-dev')
 );
 exit($factory->getCLI()->run(
     new TheSeer\phpDox\CLIOptions($_SERVER['argv'])

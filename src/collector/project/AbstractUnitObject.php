@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
+ * Copyright (c) 2010-2017 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -511,6 +511,13 @@ namespace TheSeer\phpDox\Collector {
                 foreach($trait->getExtends() as $name) {
                     $extends = $container->appendElementNS( self::XMLNS, 'extends');
                     $this->setName($name, $extends);
+                }
+            }
+
+            if ($trait->usesTraits()) {
+                foreach($trait->getUsedTraits() as $name) {
+                    $used = $container->appendElementNS( self::XMLNS, 'uses');
+                    $this->setName($name, $used);
                 }
             }
 

@@ -1,14 +1,51 @@
 # Changelog of phpDox
 
-## phpDox 0.?.? (?? ??? ????)
+## phpDox 0.10.1 (2 Juli 2017)
 
-* No changes yet
+### Changed
+* Added warning to output if PHP <7.0 is used
 
-## phpDox 0.8.1.1 (09 Jul 2015)
+### Fixed
+* Parameter and Varible type resolving issues (partially regression from [#300](https://github.com/theseer/phpdox/issues/300)) 
+
+## phpDox 0.10.0 (16 June 2017)
+
+### Added
+* [#300](https://github.com/theseer/phpdox/issues/300): Support for PHP 7.1 nullable type
+* Added support for PHP 7 style return types
+
+### Changed
+* Bump minimum PHP version to 5.5
+* Use project source directory setting for relation lookup in PHPUnit logs
+* Add additional check to ensure correct file formats
+* Changed autoload handling for vendor directory
+* Updated PHPParser to latest
+* Updated other dependencies
+* Use phive for tool dependencies
+* Updated php core classes and interfaces data
+
+### Fixed
+* [#273](https://github.com/theseer/phpdox/issues/273): Overview "Average Class Length" and "Average Method Length" Display NaN
+* [#304](https://github.com/theseer/phpdox/issues/304): Fix phpcs not actually enriching
+* [#255](https://github.com/theseer/phpdox/issues/255): Failed to load external entity components.xsl
+* [#288](https://github.com/theseer/phpdox/issues/288): Generate Error
+
+## phpDox 0.9.0 (26 August 2016)
+
+* Added check if disable_functions forbids use of exec
+* Updated to PHPParser 3.0.0
+* Raised minimum PHP version to 5.5 due to PHPParser 3
+* Removed PHP 5.3 support
+* Update Error handling to support PHP7's \Throwable
+* Fix: Issue #244 (Error : Unterminated comment starting line 1)
+* Fix: Issue #243 (Trait in Trait causes UnitObjectException if the nested trait is missing)
+* Fix: Issue #266 (Page Title "phpdox - Test Method")
+
+## phpDox 0.8.1.1 (09 Juli 2015)
 
 * Fix phar building, remove pear building target
 
-## phpDox 0.8.1 (30 Jun 2015)
+## phpDox 0.8.1 (30 June 2015)
 
 * Updated Dependency (PHPParser 1.3.0, PHP-Timer 1.0.6)
 * Added new exit codes for issues with environment and config
@@ -45,7 +82,7 @@
 * Merge PR [#163](https://github.com/theseer/phpdox/pull/163): Drop now useless requirement on ZetaComponents
 * Merge PR [#219](https://github.com/theseer/phpdox/pull/219): Make GlobalConfig::resolveValue() recursive again
 
-## phpDox 0.7.0 (11 Sep 2014)
+## phpDox 0.7.0 (11 September 2014)
 
 * Fix: Set default resolution of ${basename} to dirname of realpath of config file instead of only relative dir
 * Fix: Crash on invalid encoding / control chars in source (Issue #146, #148)

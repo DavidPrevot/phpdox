@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
+ * Copyright (c) 2010-2017 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -103,7 +103,7 @@ namespace TheSeer\phpDox {
          * @return void
          */
         public function handleShutdown() {
-            $error = error_get_last();
+            $error = $this->getLastError();
             if ($error) {
                 $exception = new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']);
                 $this->handleException($exception);
@@ -113,11 +113,11 @@ namespace TheSeer\phpDox {
         /**
          * System Exception Handler
          *
-         * @param \Exception $exception The exception to handle
+         * @param \Exception|\Throwable $exception The exception to handle
          *
          * @return void
          */
-        public function handleException(\Exception $exception) {
+        public function handleException($exception) {
             fwrite(STDERR, "\n\nOups... phpDox encountered a problem and has terminated!\n");
             fwrite(STDERR, "\nIt most likely means you've found a bug, so please file a report for this\n");
             fwrite(STDERR, "and paste the following details and the stacktrace (if given) along:\n\n");
@@ -127,7 +127,10 @@ namespace TheSeer\phpDox {
             fwrite(STDERR, "\n\n\n");
         }
 
-        private function renderException(\Exception $exception) {
+        /**
+         * @param \Exception|\Throwable $exception
+         */
+        private function renderException($exception) {
             if ($exception instanceof ErrorException) {
                 fwrite(STDERR, sprintf("ErrorException: %s \n", $exception->getErrorName()));
             } else {
@@ -164,6 +167,30 @@ namespace TheSeer\phpDox {
                 $this->renderException($nested);
             }
 
+        }
+
+        public function clearLastError() {
+            if (function_exists('error_clear_last')) {
+                error_clear_last();
+            } else {
+                set_error_handler(function () { return false; }, 0);
+                @trigger_error('');
+                restore_error_handler();
+            }
+        }
+
+        /**
+         * This method implements a workaround for PHP < 7 where no error_clear_last() exists
+         * by considering a last error of type E_USER_NOTICE as "cleared".
+         *
+         * @return array
+         */
+        private function getLastError() {
+            $error = error_get_last();
+            if ($error && $error['type'] == E_USER_NOTICE) {
+                return [];
+            }
+            return $error;
         }
     }
 

@@ -9,7 +9,7 @@
   <member name="_library" static="false" visibility="protected">
     <default>null</default>
     <docblock>
-      <description compact="&#10;       By default, this value is application.directory . &quot;/library&quot;, &#10;       you can change this either in the application.ini(application.library) or call to&#10;      Yaf_Loader::setLibraryPath&#10;      "/>
+      <description compact="By default, this value is application.directory . &quot;/library&quot;, you can change this either in the application.ini(application.library) or call to Yaf_Loader::setLibraryPath"/>
     </docblock>
   </member>
   <member name="_global_library" static="false" visibility="protected">
@@ -42,7 +42,7 @@
       <return type="void"/>
     </docblock>
   </method>
-  <constructor name="__construct" abstract="false" static="false" visibility="public" final="false">
+  <constructor name="__construct" abstract="false" static="false" final="false">
     <docblock>
       <description compact="The __construct purpose"/>
       <return type="void"/>

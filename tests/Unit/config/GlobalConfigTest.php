@@ -46,7 +46,7 @@ namespace TheSeer\phpDox {
      * @uses TheSeer\phpDox\FileInfo
      * @uses TheSeer\phpDox\Version
      */
-    class GlobalConfigTest extends \PHPUnit_Framework_TestCase {
+    class GlobalConfigTest extends \PHPUnit\Framework\TestCase {
 
         private $baseDir;
 
@@ -239,7 +239,7 @@ namespace TheSeer\phpDox {
          */
         public function testInvalidPropertyRequestThrowsException($file, $code) {
             $this->init('resolver/' .  $file);
-            $this->setExpectedException('TheSeer\\phpDox\\ConfigException', $code);
+            $this->expectException('TheSeer\\phpDox\\ConfigException', $code);
             $this->config->getProjects();
         }
 

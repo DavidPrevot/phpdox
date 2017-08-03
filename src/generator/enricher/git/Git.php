@@ -46,6 +46,7 @@ namespace TheSeer\phpDox\Generator\Enricher {
         private $commitSha1;
 
         public function __construct(GitConfig $config) {
+            $this->ensureExecFunctionEnabled();
             $this->config = $config;
         }
 
@@ -63,7 +64,7 @@ namespace TheSeer\phpDox\Generator\Enricher {
 
             $binary = $this->config->getGitBinary();
 
-            $devNull = mb_strtolower(mb_substr(PHP_OS, 0, 3)) == 'win' ? 'NUL' : '/dev/null';
+            $devNull = mb_strtolower(mb_substr(PHP_OS, 0, 3)) == 'win' ? 'nul' : '/dev/null';
 
             $cwd = getcwd();
             chdir($this->config->getSourceDirectory());
@@ -310,10 +311,18 @@ namespace TheSeer\phpDox\Generator\Enricher {
             return $this->cacheDom;
         }
 
+        /**
+         * @throws GitEnricherException
+         */
+        private function ensureExecFunctionEnabled() {
+            if (strpos(ini_get('disable_functions'), 'exec') !== FALSE) {
+                throw new GitEnricherException(
+                    'The use of "exec" has been disabled in php.ini but is required for this enricher',
+                    GitEnricherException::ExecDisabled
+                );
+            }
+        }
+
     }
 
-
-    class GitEnricherException extends \Exception {
-        const FetchingHistoryFailed = 1;
-    }
 }

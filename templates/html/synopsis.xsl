@@ -2,7 +2,13 @@
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:pdx="http://xml.phpdox.net/src"
                 xmlns:pdxf="http://xml.phpdox.net/functions"
-                exclude-result-prefixes="pdx pdxf">
+                xmlns:pu="http://schema.phpunit.de/coverage/1.0"
+                xmlns:func="http://exslt.org/functions"
+                xmlns:idx="http://xml.phpdox.net/src"
+                xmlns:git="http://xml.phpdox.net/gitlog"
+                xmlns:ctx="ctx://engine/html"
+                extension-element-prefixes="func"
+                exclude-result-prefixes="idx pdx pdxf pu git ctx">
 
     <xsl:variable name="type">
         <xsl:choose>
@@ -87,11 +93,10 @@
                 <li>// methods</li>
                 <xsl:for-each select="$unit/pdx:constructor|$unit/pdx:destructor|$unit/pdx:method">
                     <li>
-                    <xsl:value-of select="@visibility" /><xsl:if test="@final = 'true'">&#160;final</xsl:if><xsl:if test="@abstract = 'true'">&#160;abstract</xsl:if><xsl:if test="@static = 'true'">&#160;static</xsl:if><xsl:choose>
-                        <xsl:when test="pdx:docblock/pdx:return/@type = 'object'">&#160;<xsl:value-of select="pdx:docblock/pdx:return/pdx:type/@name" /></xsl:when>
-                        <xsl:when test="not(pdx:docblock/pdx:return)">&#160;void</xsl:when>
-                        <xsl:otherwise>&#160;<xsl:value-of select="pdx:docblock/pdx:return/@type" /></xsl:otherwise>
-                    </xsl:choose>&#160;<xsl:copy-of select="pdxf:link($unit, @name, @name)" />()
+                    <xsl:value-of select="@visibility" /><xsl:if test="@final = 'true'">&#160;final</xsl:if><xsl:if test="@abstract = 'true'">&#160;abstract</xsl:if><xsl:if test="@static = 'true'">&#160;static</xsl:if>&#160;<xsl:call-template
+                                name="returntype">
+                            <xsl:with-param name="ctx" select="." />
+                        </xsl:call-template>&#160;<xsl:copy-of select="pdxf:link($unit, @name, @name)" />()
                     </li>
                 </xsl:for-each>
             </ul>
@@ -130,7 +135,23 @@
             </xsl:when>
             <xsl:otherwise>&#160;<xsl:value-of select="@type" /></xsl:otherwise>
         </xsl:choose>
+    </xsl:template>
 
+    <!-- ######################################################################################################### -->
+
+    <xsl:template name="returntype">
+        <xsl:param name="ctx" />
+        <xsl:choose>
+            <xsl:when test="pdx:return"><xsl:if test="pdx:return/@nullable = 'true'">?</xsl:if>
+                <xsl:choose>
+                    <xsl:when test="pdx:return/@type = 'object'"><span title="{pdx:return/pdx:type/@name}"><xsl:value-of select="pdx:return/pdx:type/@name" /></span></xsl:when>
+                    <xsl:otherwise><xsl:value-of select="pdx:return/@type" /></xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:when test="pdx:docblock/pdx:return/@type = 'object'"><xsl:value-of select="pdx:docblock/pdx:return/pdx:type/@name" /></xsl:when>
+            <xsl:when test="not(pdx:docblock/pdx:return)">void</xsl:when>
+            <xsl:otherwise><xsl:value-of select="pdx:docblock/pdx:return/@type" /></xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
 </xsl:stylesheet>
