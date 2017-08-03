@@ -4,22 +4,22 @@ Subject: Adapt to actual autoload.php
 
 Forwarded: not-needed
 ---
- phpdox | 21 ++-------------------
- 1 file changed, 2 insertions(+), 19 deletions(-)
+ phpdox | 20 ++------------------
+ 1 file changed, 2 insertions(+), 18 deletions(-)
 
 diff --git a/phpdox b/phpdox
-index c8e27b0..1e2eefd 100755
+index 4f19b1e..c419153 100755
 --- a/phpdox
 +++ b/phpdox
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env php
 +#!/usr/bin/php
  <?php
- /**
-  * Copyright (c) 2010-2015 Arne Blankerts <arne@blankerts.de>
-@@ -40,24 +40,7 @@
-  *
-  */
+ /*
+  * Copyright (c) 2010-2017 Arne Blankerts <arne@blankerts.de>
+@@ -53,23 +53,7 @@ if (!defined('HHVM_VERSION') && (version_compare(phpversion(), '5.5', 'lt'))) {
+     die(1);
+ }
  
 -require __DIR__ . '/src/autoload.php';
 -
@@ -27,15 +27,14 @@ index c8e27b0..1e2eefd 100755
 -foreach(array(__DIR__ . '/vendor', __DIR__ . '/../..') as $vendor) {
 -    if (file_exists($vendor . '/autoload.php')) {
 -        $found = true;
--        require __DIR__ . '/src/vendor.php';
+-        require $vendor . '/autoload.php';
+-        break;
 -    }
 -}
 -
 -if (!$found) {
 -    fwrite(STDERR,
--        'You need to set up the project dependencies using the following commands:' . PHP_EOL .
--        'wget http://getcomposer.org/composer.phar' . PHP_EOL .
--        'php composer.phar install' . PHP_EOL
+-        "The vendor directory was not found at the expected locations.\nDid you run composer install?\n\n"
 -    );
 -    exit(1);
 -}

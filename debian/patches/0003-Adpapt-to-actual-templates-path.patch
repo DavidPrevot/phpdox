@@ -8,7 +8,7 @@ Forwarded: not-needed
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/generator/engine/html/HtmlConfig.php b/src/generator/engine/html/HtmlConfig.php
-index a8e04f8..4d88f08 100644
+index 6c995a3..b5a19ce 100644
 --- a/src/generator/engine/html/HtmlConfig.php
 +++ b/src/generator/engine/html/HtmlConfig.php
 @@ -39,7 +39,7 @@ namespace TheSeer\phpDox\Generator\Engine {
