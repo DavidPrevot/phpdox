@@ -1,3 +1,4 @@
 0001-Load-dependencies-from-autoload.php.patch
 0002-Adapt-to-actual-autoload.php.patch
 0003-Adpapt-to-actual-templates-path.patch
+0004-Adapt-upstream-build-system-to-Debian-expectations.patch

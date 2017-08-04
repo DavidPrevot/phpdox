@@ -1,0 +1,84 @@
+From: =?utf-8?q?David_Pr=C3=A9vot?= <david@tilapin.org>
+Date: Fri, 4 Aug 2017 09:38:44 -0400
+Subject: Adapt upstream build system to Debian expectations
+
+---
+ build.xml           | 17 ++++++++++-------
+ tests/bootstrap.php |  1 -
+ 2 files changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/build.xml b/build.xml
+index 1b2097a..c666daf 100644
+--- a/build.xml
++++ b/build.xml
+@@ -2,12 +2,15 @@
+ <project name="phpDox" default="build" basedir=".">
+     <property name="source" value="src"/>
+ 
+-    <target name="clean" description="Clean up and create artifact directories">
++    <target name="clean" description="Clean up artifact directories">
+         <delete dir="${basedir}/build/api"/>
+         <delete dir="${basedir}/build/coverage"/>
+         <delete dir="${basedir}/build/logs"/>
+         <delete dir="${basedir}/build/pdepend"/>
++        <delete file="${basedir}/build/phpab/autoload.cache"/>
++    </target>
+ 
++    <target name="build" description="Create artifact directories">
+         <mkdir dir="${basedir}/build/api"/>
+         <mkdir dir="${basedir}/build/coverage"/>
+         <mkdir dir="${basedir}/build/logs"/>
+@@ -15,18 +18,18 @@
+     </target>
+ 
+     <target name="phpab">
+-        <exec executable="${basedir}/tools/phpab">
++        <exec executable="phpab">
+             <arg line="--cache ${basedir}/build/phpab/autoload.cache -o src/autoload.php" />
+             <arg path="src" />
+         </exec>
+     </target>
+ 
+     <target name="phpunit" description="Run unit tests using PHPUnit and generates junit.xml and clover.xml">
+-        <exec executable="${basedir}/tools/phpunit" failonerror="true"/>
++        <exec executable="phpunit" failonerror="true"/>
+     </target>
+ 
+     <target name="phpmd" description="Generate pmd.xml using PHPMD">
+-        <exec executable="${basedir}/tools/phpmd">
++        <exec executable="phpmd">
+             <arg line="${source}
+               xml
+               codesize,design,naming,unusedcode
+@@ -35,13 +38,13 @@
+     </target>
+ 
+     <target name="phpcpd" description="Generate pmd-cpd.xml using PHPCPD">
+-        <exec executable="${basedir}/tools/phpcpd">
++        <exec executable="phpcpd">
+             <arg line="--log-pmd ${basedir}/build/logs/pmd-cpd.xml ${source}"/>
+         </exec>
+     </target>
+ 
+     <target name="phploc" description="Generate phploc.xml">
+-        <exec executable="${basedir}/tools/phploc">
++        <exec executable="phploc">
+             <arg line="--count-tests --log-xml ${basedir}/build/logs/phploc.xml ${source} tests"/>
+         </exec>
+     </target>
+@@ -151,5 +154,5 @@
+     </target>
+ 
+ 
+-    <target name="build" depends="clean,phpab,phpunit"/>
++    <target name="test" depends="phpunit,phpmd,phpcpd,phploc,phpcs"/>
+ </project>
+diff --git a/tests/bootstrap.php b/tests/bootstrap.php
+index 9258dba..1a6dfea 100644
+--- a/tests/bootstrap.php
++++ b/tests/bootstrap.php
+@@ -37,4 +37,3 @@
+  */
+ 
+ require __DIR__ . '/../src/autoload.php';
+-require __DIR__ . '/../vendor/autoload.php';
