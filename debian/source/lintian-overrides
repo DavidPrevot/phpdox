@@ -1,8 +1,0 @@
-# This is a Composer package: the PEAR one just embeds a PHAR
-pear-package-but-missing-dependency Depends
-pear-package-but-missing-dependency Recommends
-pear-package-but-missing-dependency Breaks
-pear-package-not-using-substvar ${phppear:summary}
-pear-package-not-using-substvar ${phppear:description}
-missing-pkg-php-tools-buildsystem phppear
-missing-pkg-php-tools-addon phppear
