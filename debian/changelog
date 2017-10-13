@@ -1,18 +1,21 @@
-phpdox (0.10.1-1) unstable; urgency=medium
+phpdox (0.10.1-1) experimental; urgency=medium
+
+  * Upload to experimental since it depends on recent php-parser only
+    available in experimental.
 
   [ Arne Blankerts ]
   * Prepare release 0.10.1
 
   [ David Prévot ]
   * Use expectException instead of deprecated setExpectedException
-  * Update Standards-Version to 4.0.0
+  * Update Standards-Version to 4.1.1
   * Update copyright (years)
   * Adapt upstream build system to Debian expectations
 
   [ Chris Lamb ]
   * Make the build reproducible (Closes: #835193)
 
- -- David Prévot <taffit@debian.org>  Fri, 04 Aug 2017 09:23:17 -0400
+ -- David Prévot <taffit@debian.org>  Thu, 12 Oct 2017 15:40:52 -1000
 
 phpdox (0.8.1.1-2) unstable; urgency=medium
 
