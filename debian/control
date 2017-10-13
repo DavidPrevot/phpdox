@@ -19,7 +19,7 @@ Build-Depends: ant,
                phpmd,
                phpunit,
                pkg-php-tools (>= 1.29~)
-Standards-Version: 4.0.0
+Standards-Version: 4.1.1
 Homepage: http://phpdox.de/
 Vcs-Git: git://anonscm.debian.org/pkg-php/phpdox.git
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-php/phpdox.git
