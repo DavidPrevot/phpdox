@@ -3,6 +3,8 @@ Date: Tue, 23 Aug 2016 13:18:13 +0100
 Subject: Make the build reproducible
 
 Bug-Debian: https://bugs.debian.org/835193
+Bug: https://github.com/theseer/phpdox/pull/310
+Applied-upstream: https://github.com/theseer/phpdox/commit/f9545809f16b0c9d9930eae6ecdfcefffc15fe3e
 ---
  src/shared/Version.php | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
