@@ -1,3 +1,10 @@
+phpdox (0.10.1-2) unstable; urgency=medium
+
+  * Upload to unstable in sync with recent php-parser
+  * Update Standards-Version to 4.1.2
+
+ -- David Prévot <taffit@debian.org>  Sun, 03 Dec 2017 14:06:06 -1000
+
 phpdox (0.10.1-1) experimental; urgency=medium
 
   * Upload to experimental since it depends on recent php-parser only
