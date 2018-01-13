@@ -40,19 +40,7 @@
  *
  */
 
-if (!defined('HHVM_VERSION') && (version_compare(phpversion(), '5.5', 'lt'))) {
-    fwrite(
-        STDERR,
-        sprintf(
-            "phpDox requires PHP 5.5 or later; " .
-            "Upgrading to the latest version of PHP is highly recommended. (Version used: %s)\n\n",
-            phpversion()
-        )
-    );
-
-    die(1);
-}
-
+require __DIR__ . '/src/runtimecheck.php';
 require __DIR__ . '/src/autoload.php';
 
 $found = false;
