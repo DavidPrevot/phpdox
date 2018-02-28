@@ -1,3 +1,20 @@
+phpdox (0.11.0-1) unstable; urgency=medium
+
+  [ Arne Blankerts ]
+  * Start 0.11.0-dev
+  * Bump Copyright
+
+  [ Cristi Cotet ]
+  * Fixed: count(): Parameter must be an array or an object that implements
+    Countable (Closes: #889122)
+
+  [ David Prévot ]
+  * Update copyright (years)
+  * Move project repository to salsa.d.o
+  * Update Standards-Version to 4.1.3
+
+ -- David Prévot <taffit@debian.org>  Tue, 27 Feb 2018 19:48:16 -1000
+
 phpdox (0.10.1-2) unstable; urgency=medium
 
   * Upload to unstable in sync with recent php-parser
