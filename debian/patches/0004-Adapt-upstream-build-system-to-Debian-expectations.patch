@@ -74,7 +74,7 @@ index 1b2097a..c666daf 100644
 +    <target name="test" depends="phpunit,phpmd,phpcpd,phploc,phpcs"/>
  </project>
 diff --git a/tests/bootstrap.php b/tests/bootstrap.php
-index 9258dba..1a6dfea 100644
+index d2587ef..6d8a24a 100644
 --- a/tests/bootstrap.php
 +++ b/tests/bootstrap.php
 @@ -37,4 +37,3 @@
