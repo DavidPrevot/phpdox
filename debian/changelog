@@ -1,3 +1,10 @@
+phpdox (0.11.0-2) experimental; urgency=medium
+
+  * Use php-timer (>= 2)
+  * Upload to experimental as php-timer (>= 2)
+
+ -- David Prévot <taffit@debian.org>  Thu, 08 Mar 2018 09:15:27 -1000
+
 phpdox (0.11.0-1) unstable; urgency=medium
 
   [ Arne Blankerts ]
