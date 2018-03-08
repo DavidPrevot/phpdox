@@ -2,6 +2,7 @@ From: =?utf-8?q?David_Pr=C3=A9vot?= <david@tilapin.org>
 Date: Fri, 4 Aug 2017 09:38:44 -0400
 Subject: Adapt upstream build system to Debian expectations
 
+Forwarded: not-needed
 ---
  build.xml           | 17 ++++++++++-------
  tests/bootstrap.php |  1 -
