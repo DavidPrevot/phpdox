@@ -1,3 +1,10 @@
+phpdox (0.11.0-3) unstable; urgency=medium
+
+  * Upload to unstable, with the rest of the latest PHPUnit stack,
+    including php-timer (>= 2)
+
+ -- David Prévot <taffit@debian.org>  Thu, 29 Mar 2018 11:11:15 -1000
+
 phpdox (0.11.0-2) experimental; urgency=medium
 
   * Use php-timer (>= 2)
