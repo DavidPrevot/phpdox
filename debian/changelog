@@ -1,3 +1,9 @@
+phpdox (0.11.1-1) unstable; urgency=medium
+
+  * Update Standards-Version to 4.1.4
+
+ -- David Prévot <taffit@debian.org>  Wed, 09 May 2018 14:46:43 -1000
+
 phpdox (0.11.0-3) unstable; urgency=medium
 
   * Upload to unstable, with the rest of the latest PHPUnit stack,
