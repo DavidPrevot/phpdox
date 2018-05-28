@@ -1,3 +1,10 @@
+phpdox (0.11.2-1) unstable; urgency=medium
+
+  [ Arne Blankerts ]
+  * Update changelog/readme for release
+
+ -- David Prévot <taffit@debian.org>  Mon, 28 May 2018 12:49:32 -1000
+
 phpdox (0.11.1-1) unstable; urgency=medium
 
   * Update Standards-Version to 4.1.4
