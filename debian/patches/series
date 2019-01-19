@@ -2,4 +2,3 @@
 0002-Adapt-to-actual-autoload.php.patch
 0003-Adpapt-to-actual-templates-path.patch
 0004-Adapt-upstream-build-system-to-Debian-expectations.patch
-0005-Use-php-timer-2.patch

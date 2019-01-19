@@ -8,7 +8,7 @@ Forwarded: not-needed
  1 file changed, 2 insertions(+), 19 deletions(-)
 
 diff --git a/phpdox b/phpdox
-index 0e76af5..ba49b93 100755
+index 63a7b0c..b5694c6 100755
 --- a/phpdox
 +++ b/phpdox
 @@ -1,4 +1,4 @@
@@ -16,7 +16,7 @@ index 0e76af5..ba49b93 100755
 +#!/usr/bin/php
  <?php
  /*
-  * Copyright (c) 2010-2017 Arne Blankerts <arne@blankerts.de>
+  * Copyright (c) 2010-2019 Arne Blankerts <arne@blankerts.de>
 @@ -40,24 +40,7 @@
   *
   */

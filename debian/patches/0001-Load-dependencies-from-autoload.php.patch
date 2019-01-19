@@ -8,7 +8,7 @@ Forwarded: not-needed
  1 file changed, 7 insertions(+)
 
 diff --git a/src/autoload.php b/src/autoload.php
-index d559291..bd5fa82 100644
+index e547ffb..f88472b 100644
 --- a/src/autoload.php
 +++ b/src/autoload.php
 @@ -1,4 +1,11 @@
@@ -17,8 +17,8 @@ index d559291..bd5fa82 100644
 +require_once 'TheSeer/fDOMDocument/autoload.php';
 +require_once 'TheSeer/DirectoryScanner/autoload.php';
 +require_once 'TheSeer/fXSL/autoload.php';
-+require_once 'PHP/Timer.php';
-+require_once 'PhpParser/bootstrap.php';
++require_once 'SebastianBergmann/Timer/autoload.php';
++require_once 'PhpParser/autoload.php';
 +
  // @codingStandardsIgnoreFile
  // @codeCoverageIgnoreStart
