@@ -5,7 +5,7 @@ Maintainer: Debian PHP PEAR Maintainers <pkg-php-pear@lists.alioth.debian.org>
 Uploaders: David Prévot <taffit@debian.org>,
            Prach Pongpanich <prachpub@gmail.com>
 Build-Depends: ant,
-               debhelper (>= 9),
+               debhelper-compat (= 12),
                help2man,
                php-codesniffer,
                php-directory-scanner,
