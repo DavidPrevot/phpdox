@@ -1,5 +1,5 @@
 version=3
 # The PEAR package just embeds a PHAR
 # http://pear.netpirates.net/ http://pear.netpirates.net/get/phpDox-([\d\.]+).tgz
-options=uversionmangle=s/A/~alpha/i;s/B/~beta/i;s/RC/~rc/i \
+options=uversionmangle=s/-?([^\d.]+)/~$1/;tr/A-Z/a-z/;s/dev/~dev/ \
 https://github.com/theseer/phpdox/releases .*/archive/(.*).tar.gz
