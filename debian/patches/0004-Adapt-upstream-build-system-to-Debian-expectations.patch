@@ -9,7 +9,7 @@ Forwarded: not-needed
  2 files changed, 10 insertions(+), 9 deletions(-)
 
 diff --git a/build.xml b/build.xml
-index 1b2097a..c666daf 100644
+index 9fa1aa4..cb7ffc1 100644
 --- a/build.xml
 +++ b/build.xml
 @@ -2,12 +2,15 @@
@@ -67,9 +67,9 @@ index 1b2097a..c666daf 100644
              <arg line="--count-tests --log-xml ${basedir}/build/logs/phploc.xml ${source} tests"/>
          </exec>
      </target>
-@@ -151,5 +154,5 @@
+@@ -167,5 +170,5 @@
+         <delete file="phive.phar.asc" />
      </target>
- 
  
 -    <target name="build" depends="clean,phpab,phpunit"/>
 +    <target name="test" depends="phpunit,phpmd,phpcpd,phploc,phpcs"/>
