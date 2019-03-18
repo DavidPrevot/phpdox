@@ -1,0 +1,21 @@
+From: =?utf-8?q?David_Pr=C3=A9vot?= <taffit@debian.org>
+Date: Sun, 17 Mar 2019 17:13:47 -1000
+Subject: Declare SOURCE_DATE_EPOCH as an integer
+
+---
+ src/shared/Version.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/shared/Version.php b/src/shared/Version.php
+index a5f0619..ca4deb1 100644
+--- a/src/shared/Version.php
++++ b/src/shared/Version.php
+@@ -29,7 +29,7 @@ class Version {
+     }
+ 
+     public function getInfoString() {
+-        return 'phpDox ' . $this->getVersion() . ' - Copyright (C) 2010 - ' . \date('Y', \getenv('SOURCE_DATE_EPOCH') ?: \time()) . ' by Arne Blankerts and Contributors';
++        return 'phpDox ' . $this->getVersion() . ' - Copyright (C) 2010 - ' . \date('Y', (int)\getenv('SOURCE_DATE_EPOCH') ?: \time()) . ' by Arne Blankerts and Contributors';
+     }
+ 
+     public function getGeneratedByString() {
