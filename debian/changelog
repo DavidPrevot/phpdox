@@ -1,19 +1,21 @@
-phpdox (0.12.0~~dev-1) experimental; urgency=medium
+phpdox (0.12.0-1) experimental; urgency=medium
 
-  Upload dev version to experimental
+  Upload to experimental during the freeze
 
   [ Arne Blankerts ]
   * Bump copyright
+  * Bundle OFL Font "SourceSansPro", cleanup CSS
+  * Release 0.12.0
 
   [ David Prévot ]
   * More generic version handling
-  * Update copyright (years)
+  * Update copyright
   * Drop get-orig-source target
   * Use https in Format
   * Use debhelper-compat 12
   * Depend on recent php-parser
 
- -- David Prévot <taffit@debian.org>  Fri, 18 Jan 2019 15:48:02 -1000
+ -- David Prévot <taffit@debian.org>  Sun, 17 Mar 2019 15:59:01 -1000
 
 phpdox (0.11.2-1) unstable; urgency=medium
 
